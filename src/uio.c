@@ -73,3 +73,4 @@ bool uio_eof(struct uio *s)
         }
 
 DEF_PUT_GET_FOR(int, i)
+DEF_PUT_GET_FOR(char, c)
