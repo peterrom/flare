@@ -48,25 +48,28 @@ void uio_close(struct uio *s)
         free(s);
 }
 
-bool uio_put_i(struct uio *s, int v)
-{
-        if (!mbuf_fits(s, sizeof(v)))
-                return false;
-
-        mbuf_push(s, &v, sizeof(v));
-        return true;
-}
-
-bool uio_get_i(struct uio *s, int *v)
-{
-        if (!mbuf_fits(s, sizeof(*v)))
-                return false;
-
-        mbuf_pop(s, v, sizeof(*v));
-        return true;
-}
-
 bool uio_eof(struct uio *s)
 {
         return s->mbuf == s->mbuf_end;
 }
+
+#define DEF_PUT_GET_FOR(TYPE, SUFF)                     \
+        bool uio_put_ ## SUFF(struct uio *s, TYPE v)    \
+        {                                               \
+                if (!mbuf_fits(s, sizeof(v)))           \
+                        return false;                   \
+                                                        \
+                mbuf_push(s, &v, sizeof(v));            \
+                return true;                            \
+        }                                               \
+                                                        \
+        bool uio_get_ ## SUFF(struct uio *s, TYPE *v)   \
+        {                                               \
+                if (!mbuf_fits(s, sizeof(*v)))          \
+                        return false;                   \
+                                                        \
+                mbuf_pop(s, v, sizeof(*v));             \
+                return true;                            \
+        }
+
+DEF_PUT_GET_FOR(int, i)
