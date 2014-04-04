@@ -7,7 +7,7 @@
 
 /* * Unified Input/Output (UIO)
    The idea behind UIO is to have a unified IO model in Flare.
-   Whether it is writing/reading to/from memory, file or sockets,
+   Whether it is writing/reading to/from memory, files or sockets,
    we want to be able to use the same streaming interface. */
 
 #include <stdbool.h>
