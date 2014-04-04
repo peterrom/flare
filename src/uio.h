@@ -18,9 +18,9 @@ struct uio;
 struct uio *uio_open_mbuf(void *mbuf, size_t byte_sz);
 void uio_close(struct uio *s);
 
+bool uio_eof(struct uio *s);
+
 bool uio_put_i(struct uio *s, int v);
 bool uio_get_i(struct uio *s, int *v);
-
-bool uio_eof(struct uio *s);
 
 #endif /* UIO_INCL */
