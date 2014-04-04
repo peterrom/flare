@@ -37,7 +37,7 @@ struct uio *uio_open_mbuf(void *mbuf, size_t byte_sz)
                 .mbuf_end = mbuf + byte_sz
         };
 
-        struct uio *s = malloc(sizeof(struct uio));
+        struct uio *s = malloc(sizeof(tmp));
         memcpy(s, &tmp, sizeof(*s));
 
         return s;
