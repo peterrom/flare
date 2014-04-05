@@ -18,7 +18,7 @@ check: ${TESTS}
 
 .build/%.P: %.c | .build
 	@echo -n .build/ > $@
-	@c99 -MM -MP $< >> $@
+	c99 -MM -MP $< >> $@
 
 .build/test%: .build/test%.o ${OBJ}
 	c99 $^ -o $@ ${CFLAGS}
