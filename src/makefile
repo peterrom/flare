@@ -23,7 +23,7 @@ check: ${TESTS}
 .build/test%: .build/test%.o ${OBJ}
 	c99 $^ -o $@ ${CFLAGS}
 
-.build/%.o: %.c %.h | .build
+.build/%.o: %.c | .build
 	c99 -c $< -o $@ ${CFLAGS}
 
 .build/test%.o: test%.c tf.h | .build
