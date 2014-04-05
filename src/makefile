@@ -10,8 +10,8 @@ PARTS += forty
 
 # generated
 OBJ = $(addprefix .build/, $(addsuffix .o, ${PARTS}))
-DEPS = $(OBJ:.o=.P)
 TESTS = $(addprefix .build/test, ${PARTS})
+DEPS = $(OBJ:.o=.P) $(addsuffix .P, ${TESTS})
 
 check: ${TESTS}
 	@for t in $^; do echo; echo $${t}; ./$${t}; done
