@@ -2,6 +2,11 @@
 # This file is part of Flare which is licensed under GNU GPL v3.
 # See the file named LICENSE for details.
 
+# This (GNU) makefile works by defining the "parts" of a program.
+# Each "part" is assumed to consist of (at least) a <name>.c file
+# and a test<name>.c file that should define a main function to be
+# run by "make check".
+
 # user options
 CFLAGS = -Wall -Wextra
 
