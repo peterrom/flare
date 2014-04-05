@@ -16,7 +16,7 @@ TESTS = $(addprefix .build/test, ${PARTS})
 check: ${TESTS}
 	@for t in $^; do echo; echo $${t}; ./$${t}; done
 
-.build/%.P: %.c
+.build/%.P: %.c | .build
 	@echo -n .build/ > $@
 	@c99 -MM -MP $< >> $@
 
