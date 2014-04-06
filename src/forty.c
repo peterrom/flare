@@ -25,7 +25,7 @@ static bool as_push(struct action_stack *s, struct forty_action *a)
                 return false;
 
         s->sp = a;
-        s->sp += 1;
+        ++s->sp;
 
         return true;
 }
@@ -35,7 +35,7 @@ static struct forty_action *as_pop(struct action_stack *s)
         if (as_empty(s))
                 return NULL;
 
-        s->sp -= 1;
+        --s->sp;
 
         return s->sp;
 }
