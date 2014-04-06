@@ -22,8 +22,10 @@ bool uio_eof(struct uio *s);
 
 bool uio_put_i(struct uio *s, int v);
 bool uio_get_i(struct uio *s, int *v);
+bool uio_peek_i(struct uio *s, int *v);
 
 bool uio_put_c(struct uio *s, char v);
 bool uio_get_c(struct uio *s, char *v);
+bool uio_peek_c(struct uio *s, char *v);
 
 #endif /* UIO_INCL */

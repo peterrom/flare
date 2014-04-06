@@ -24,9 +24,13 @@ static void mbuf_push(struct uio *s, void *v, size_t byte_sz)
         s->mbuf += byte_sz;
 }
 
-static void mbuf_pop(struct uio *s, void *v, size_t byte_sz)
+static void mbuf_peek(struct uio *s, void *v, size_t byte_sz)
 {
         memcpy(v, s->mbuf, byte_sz);
+}
+
+static void mbuf_pop(struct uio *s, size_t byte_sz)
+{
         s->mbuf += byte_sz;
 }
 
@@ -53,7 +57,7 @@ bool uio_eof(struct uio *s)
         return s->mbuf == s->mbuf_end;
 }
 
-#define DEF_PUT_GET_FOR(TYPE, SUFF)                     \
+#define DEF_PUT_GET_PEEK_FOR(TYPE, SUFF)                \
         bool uio_put_ ## SUFF(struct uio *s, TYPE v)    \
         {                                               \
                 if (!mbuf_fits(s, sizeof(v)))           \
@@ -68,9 +72,21 @@ bool uio_eof(struct uio *s)
                 if (!mbuf_fits(s, sizeof(*v)))          \
                         return false;                   \
                                                         \
-                mbuf_pop(s, v, sizeof(*v));             \
+                if (v)                                  \
+                        mbuf_peek(s, v, sizeof(*v));    \
+                                                        \
+                mbuf_pop(s, sizeof(*v));                \
+                return true;                            \
+        }                                               \
+                                                        \
+        bool uio_peek_ ## SUFF(struct uio *s, TYPE *v)  \
+        {                                               \
+                if (!mbuf_fits(s, sizeof(*v)))          \
+                        return false;                   \
+                                                        \
+                mbuf_peek(s, v, sizeof(*v));            \
                 return true;                            \
         }
 
-DEF_PUT_GET_FOR(int, i)
-DEF_PUT_GET_FOR(char, c)
+DEF_PUT_GET_PEEK_FOR(int, i)
+DEF_PUT_GET_PEEK_FOR(char, c)

@@ -33,6 +33,25 @@ tf_TEST(mbuf_get)
         uio_close(is);
 }
 
+tf_TEST(mbuf_peek)
+{
+        int buffer[] = { 1, 2 };
+
+        struct uio *is = uio_open_mbuf(buffer, sizeof(buffer));
+        int tmp;
+
+        tf_ASSERT(uio_peek_i(is, &tmp) && tmp == 1);
+        tf_ASSERT(uio_peek_i(is, &tmp) && tmp == 1);
+        tf_ASSERT(uio_get_i(is, NULL));
+        tf_ASSERT(uio_peek_i(is, &tmp) && tmp == 2);
+        tf_ASSERT(uio_peek_i(is, &tmp) && tmp == 2);
+        tf_ASSERT(uio_get_i(is, NULL));
+        tf_ASSERT(!uio_peek_i(is, &tmp));
+        tf_ASSERT(!uio_get_i(is, NULL));
+
+        uio_close(is);
+}
+
 tf_TEST(mbuf_eof)
 {
         int buffer[] = { 1, 2 };
@@ -53,5 +72,6 @@ tf_SUITE(uio)
 {
         tf_RUN(mbuf_put);
         tf_RUN(mbuf_get);
+        tf_RUN(mbuf_peek);
         tf_RUN(mbuf_eof);
 }
