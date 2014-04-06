@@ -1,5 +1,7 @@
 #include "forty.h"
 
+#include <string.h>
+
 #define ACTION_STACK_SZ 8
 
 struct action_stack {
@@ -36,6 +38,16 @@ static struct forty_action *as_pop(struct action_stack *s)
         s->sp -= 1;
 
         return s->sp;
+}
+
+static struct forty_action *find_action(struct forty_action *actions,
+					const char *id)
+{
+        for (; actions->id; ++actions)
+                if (strcmp(actions->id, id) == 0)
+                        return actions;
+
+        return NULL;
 }
 
 bool forty_print(const struct forty_action *actions, struct uio *s)
