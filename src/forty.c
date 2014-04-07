@@ -3,22 +3,22 @@
 #include <string.h>
 
 
-struct action_stack {
+struct as {
         struct forty_action array[8];
         struct forty_action *sp;
 };
 
-static bool as_full(struct action_stack *s)
+static bool as_full(struct as *s)
 {
         return s->sp == s->array + sizeof(s->array);
 }
 
-static bool as_empty(struct action_stack *s)
+static bool as_empty(struct as *s)
 {
         return s->sp == s->array;
 }
 
-static bool as_push(struct action_stack *s, struct forty_action *a)
+static bool as_push(struct as *s, struct forty_action *a)
 {
         if (as_full(s))
                 return false;
@@ -29,7 +29,7 @@ static bool as_push(struct action_stack *s, struct forty_action *a)
         return true;
 }
 
-static struct forty_action *as_pop(struct action_stack *s)
+static struct forty_action *as_pop(struct as *s)
 {
         if (as_empty(s))
                 return NULL;
