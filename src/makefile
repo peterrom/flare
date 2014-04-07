@@ -31,7 +31,7 @@ check: ${TESTS}
 .build/%.o: %.c | .build
 	c99 -c $< -o $@ ${CFLAGS}
 
-.build/test%.o: test%.c tf.h | .build
+.build/test%.o: test%.c | .build
 	c99 -c $< -o $@ ${CFLAGS}
 
 .build:
