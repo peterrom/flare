@@ -2,16 +2,15 @@
 
 #include <string.h>
 
-#define ACTION_STACK_SZ 8
 
 struct action_stack {
-        struct forty_action array[ACTION_STACK_SZ];
+        struct forty_action array[8];
         struct forty_action *sp;
 };
 
 static bool as_full(struct action_stack *s)
 {
-        return s->sp == s->array + ACTION_STACK_SZ;
+        return s->sp == s->array + sizeof(s->array);
 }
 
 static bool as_empty(struct action_stack *s)
