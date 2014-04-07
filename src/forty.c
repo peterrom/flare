@@ -39,8 +39,8 @@ static struct forty_action *as_pop(struct as *s)
         return s->sp;
 }
 
-static struct forty_action *find_action(struct forty_action *actions,
-					const char *id)
+static struct forty_action *al_find(struct forty_action *actions,
+                                    const char *id)
 {
         for (; actions->id; ++actions)
                 if (strcmp(actions->id, id) == 0)
