@@ -8,7 +8,10 @@
 /* * FORmatted TYper (FORTY)
  */
 
-#include "uio.h"
+#include <stddef.h>
+#include <stdbool.h>
+
+struct uio;
 
 struct forty_action {
         const char *id;

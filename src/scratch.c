@@ -7,6 +7,8 @@
 #include <string.h>
 #include <assert.h>
 
+#include "uio.h"
+
 void scratch_init(struct scratch *s)
 {
         s->valid_beg = s->buffer;

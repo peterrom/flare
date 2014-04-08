@@ -6,6 +6,7 @@
 
 #include <string.h>
 
+#include "uio.h"
 
 struct as {
         struct forty_action array[8];

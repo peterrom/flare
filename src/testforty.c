@@ -4,6 +4,7 @@
 
 #include "tf.h"
 #include "forty.h"
+#include "uio.h"
 
 char testforty_g_buffer[1024];
 

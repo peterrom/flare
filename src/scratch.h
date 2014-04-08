@@ -5,7 +5,7 @@
 #ifndef SCRATCH_INCL
 #define SCRATCH_INCL
 
-#include "uio.h"
+struct uio;
 
 struct scratch {
         char buffer[32];

@@ -4,6 +4,7 @@
 
 #include "tf.h"
 #include "scratch.h"
+#include "uio.h"
 
 #include <string.h>
 
