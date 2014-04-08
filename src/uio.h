@@ -20,8 +20,10 @@ void uio_close(struct uio *s);
 
 bool uio_eof(struct uio *s);
 
-/* Copy /n/ bytes from /src/ to /dst/. Return the number of bytes copied. */
-size_t uio_copy(struct uio *src, struct uio *dst, size_t n);
+/* Copy all or /n/ bytes from /src/ to /dst/. Return the number of
+   bytes copied. */
+size_t uio_copy(struct uio *src, struct uio *dst);
+size_t uio_copy_n(struct uio *src, struct uio *dst, size_t n);
 
 bool uio_put_i(struct uio *s, int v);
 bool uio_get_i(struct uio *s, int *v);

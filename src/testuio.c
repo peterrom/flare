@@ -76,7 +76,7 @@ tf_TEST(mbuf_copy)
         struct uio *os = uio_open_mbuf(buffer1, sizeof(buffer1));
         struct uio *is = uio_open_mbuf(buffer2, sizeof(buffer2));
 
-        tf_ASSERT(uio_copy(is, os, sizeof(int)) == sizeof(int) &&
+        tf_ASSERT(uio_copy_n(is, os, sizeof(int)) == sizeof(int) &&
                   buffer1[0] == 3);
 
         uio_close(os);
@@ -91,7 +91,7 @@ tf_TEST(mbuf_copy_os_shorter)
         struct uio *os = uio_open_mbuf(buffer1, sizeof(buffer1));
         struct uio *is = uio_open_mbuf(buffer2, sizeof(buffer2));
 
-        tf_ASSERT(uio_copy(is, os, sizeof(buffer2)) == sizeof(buffer1) &&
+        tf_ASSERT(uio_copy(is, os) == sizeof(buffer1) &&
                   buffer1[0] == 3 &&
                   buffer1[1] == 4);
 
@@ -111,7 +111,7 @@ tf_TEST(mbuf_copy_is_shorter)
         struct uio *os = uio_open_mbuf(buffer1, sizeof(buffer1));
         struct uio *is = uio_open_mbuf(buffer2, sizeof(buffer2));
 
-        tf_ASSERT(uio_copy(is, os, sizeof(buffer1)) == sizeof(buffer2) &&
+        tf_ASSERT(uio_copy(is, os) == sizeof(buffer2) &&
                   buffer1[0] == 4 &&
                   buffer1[1] == 5 &&
                   buffer1[2] == 3);

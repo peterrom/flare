@@ -57,7 +57,19 @@ bool uio_eof(struct uio *s)
         return s->mbuf == s->mbuf_end;
 }
 
-size_t uio_copy(struct uio *src, struct uio *dst, size_t n)
+size_t uio_copy(struct uio *src, struct uio *dst)
+{
+        for (size_t i = 0;; ++i) {
+                char tmp;
+
+                if (!uio_peek_c(src, &tmp) || !uio_put_c(dst, tmp))
+                        return i;
+
+                uio_get_c(src, NULL);
+        }
+}
+
+size_t uio_copy_n(struct uio *src, struct uio *dst, size_t n)
 {
         for (size_t i = 0; i < n; ++i) {
                 char tmp;
