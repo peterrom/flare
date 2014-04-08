@@ -8,6 +8,30 @@
 
 #define TF_INCL
 
+/* * Test Framework (TF)
+   This is the minimalistic test framework used in Flare. It works by
+   defining tests as
+
+   : tf_TEST(true_is_true)
+   : {
+   :         tf_ASSERT(true);
+   : }
+
+   and then setting up a suite
+
+   : tf_SUITE(example)
+   : {
+   :         tf_RUN(true_is_true);
+   : }
+
+   and that's it!
+
+   Since tf_SUITE sets up a ~main~ function, TF is limited to one suite
+   per ~.c~ file.
+
+   The suites are designed to be run in an emacs compilation buffer. That
+   is why failure messages are formatted as compilation errors. */
+
 #include <stdio.h>
 #include <string.h>
 
