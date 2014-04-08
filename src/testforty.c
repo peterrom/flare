@@ -13,8 +13,8 @@ tf_TEST(no_input)
                 { NULL, NULL, NULL}
         };
 
-        struct uio *s = uio_open_mbuf("", sizeof(""));
-        tf_ASSERT(forty_print(as, s));
+        struct uio is = uio_mbuf("", sizeof(""));
+        tf_ASSERT(forty_print(as, &is));
 }
 
 tf_SUITE(forty)

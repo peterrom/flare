@@ -8,11 +8,6 @@
 #include <string.h>
 #include <stdbool.h>
 
-struct uio {
-        char *mbuf;
-        char *mbuf_end;
-};
-
 static bool mbuf_fits(struct uio *s, size_t byte_sz)
 {
         return s->mbuf + byte_sz <= s->mbuf_end;
@@ -34,22 +29,18 @@ static void mbuf_pop(struct uio *s, size_t byte_sz)
         s->mbuf += byte_sz;
 }
 
-struct uio *uio_open_mbuf(void *mbuf, size_t byte_sz)
+struct uio uio_mbuf(void *mbuf, size_t byte_sz)
 {
         struct uio tmp = {
                 .mbuf = mbuf,
                 .mbuf_end = mbuf + byte_sz
         };
 
-        struct uio *s = malloc(sizeof(tmp));
-        memcpy(s, &tmp, sizeof(*s));
-
-        return s;
+        return tmp;
 }
 
 void uio_close(struct uio *s)
 {
-        free(s);
 }
 
 bool uio_eof(struct uio *s)

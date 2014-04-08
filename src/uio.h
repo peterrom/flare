@@ -13,9 +13,12 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-struct uio;
+struct uio {
+        char *mbuf;
+        char *mbuf_end;
+};
 
-struct uio *uio_open_mbuf(void *mbuf, size_t byte_sz);
+struct uio uio_mbuf(void *mbuf, size_t byte_sz);
 void uio_close(struct uio *s);
 
 bool uio_eof(struct uio *s);
