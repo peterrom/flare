@@ -56,10 +56,10 @@ char tf_g_fail[256] = "";
 void tf_report_result(const char *name)
 {
         if (strlen(tf_g_fail) > 0) {
-                printf("%s failed!\n%s\n", name, tf_g_fail);
+                printf("%-42s failed! <<<<<<<<\n%s\n\n", name, tf_g_fail);
                 tf_g_fail[0] = '\0';
         } else {
-                printf("%s passed!\n", name);
+                printf("%-42s passed!\n", name);
         }
 }
 
