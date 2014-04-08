@@ -6,6 +6,9 @@
 # Each "part" is assumed to consist of (at least) a <name>.c file
 # and a test<name>.c file that should define a main function to be
 # run by "make check".
+#
+# Header-only parts should be added to ~H_PARTS~ which will build
+# the test for that part but obviously not an object.
 
 # user options
 CFLAGS = -Wall -Wextra
@@ -14,9 +17,12 @@ PARTS += uio
 PARTS += scratch
 PARTS += forty
 
+H_PARTS += stack
+
 # generated
 OBJ = $(addprefix .build/, $(addsuffix .o, ${PARTS}))
-TESTS = $(addprefix .build/test, ${PARTS})
+TESTS += $(addprefix .build/test, ${PARTS})
+TESTS += $(addprefix .build/test, ${H_PARTS})
 DEPS = $(OBJ:.o=.P) $(addsuffix .P, ${TESTS})
 
 check: ${TESTS}
