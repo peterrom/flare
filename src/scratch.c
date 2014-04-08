@@ -31,7 +31,7 @@ static size_t tail_sz(const struct scratch *s)
         return s->buffer + sizeof(s->buffer) - s->valid_end;
 }
 
-void scratch_fill(struct scratch *s, struct uio *is)
+void scratch_fill_end(struct scratch *s, struct uio *is)
 {
         struct uio os = uio_mbuf(s->valid_end, tail_sz(s));
         s->valid_end += uio_copy(is, &os);
