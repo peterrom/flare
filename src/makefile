@@ -11,6 +11,7 @@
 CFLAGS = -Wall -Wextra
 
 PARTS += uio
+PARTS += scratch
 PARTS += forty
 
 # generated
