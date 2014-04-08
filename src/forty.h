@@ -19,8 +19,8 @@ struct forty_action {
         void (*pop) (void);
 };
 
-/* Interpret the data from /s/ according to /actions/.
-   Return /true/ if successful. */
+/* Interpret the data from ~s~ according to ~actions~.
+   Return ~true~ if successful. */
 bool forty_print(const struct forty_action *actions, struct uio *s);
 
 #endif /* FORTY_INCL */
