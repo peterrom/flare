@@ -2,36 +2,57 @@
    This file is part of Flare which is licensed under GNU GPL v3.
    See the file named LICENSE for details. */
 
-#ifndef STACK_INCL
-#define STACK_INCL
+#ifndef SS_INCL
+#define SS_INCL
+
+/* * Stack Stack (SS)
+   SS is a type generic, static, stack allocated, stack implementation.
+   To declare a stack, simply use
+
+   : SS_DECLARE_STACK(i, int, 16)
+
+   which will declare the following struct and static interface
+
+   : struct ss_i { ... };
+   : static void ss_i_init(struct ss_i *)        { ... }
+   : static bool ss_i_full(struct ss_i *)        { ... }
+   : static bool ss_i_empty(struct ss_i *)       { ... }
+   :
+   : // Push ~v~ onto the stack. Return ~true~ if successful.
+   : static bool ss_i_push(struct ss_i *, int v) { ... }
+   :
+   : // Pop stack. Return pointer to the top element or ~NULL~.
+   : static int *ss_i_pop(struct ss_i *)         { ... }
+*/
 
 #include <stdbool.h>
 
-#define STACK_DECLARE(TYPE, SZ)                                         \
-        struct stack_ ## TYPE {                                         \
+#define SS_DECLARE_STACK(NAME, TYPE, SZ)                                \
+                                                                        \
+        struct ss_ ## NAME {                                            \
                 TYPE array[SZ];                                         \
                 TYPE *sp;                                               \
         };                                                              \
                                                                         \
-        static void stack_ ## TYPE ## _init(struct stack_ ## TYPE *s)   \
+        static void ss_ ## NAME ## _init(struct ss_ ## NAME *s)         \
         {                                                               \
                 s->sp = s->array;                                       \
         }                                                               \
                                                                         \
-        static bool stack_ ## TYPE ## _full(struct stack_ ## TYPE *s)   \
+        static bool ss_ ## NAME ## _full(struct ss_ ## NAME *s)         \
         {                                                               \
                 return s->sp == s->array + SZ;                          \
         }                                                               \
                                                                         \
-        static bool stack_ ## TYPE ## _empty(struct stack_ ## TYPE *s)  \
+        static bool ss_ ## NAME ## _empty(struct ss_ ## NAME *s)        \
         {                                                               \
                 return s->sp == s->array;                               \
         }                                                               \
                                                                         \
-        static bool stack_ ## TYPE ## _push(struct stack_ ## TYPE *s,   \
-                                            TYPE v)                     \
+        static bool ss_ ## NAME ## _push(struct ss_ ## NAME *s,         \
+                                         TYPE v)                        \
         {                                                               \
-                if (stack_ ## TYPE ## _full(s))                         \
+                if (ss_ ## NAME ## _full(s))                            \
                         return false;                                   \
                                                                         \
                 *s->sp = v;                                             \
@@ -40,9 +61,9 @@
                 return true;                                            \
         }                                                               \
                                                                         \
-        static TYPE *stack_ ## TYPE ## _pop(struct stack_ ## TYPE *s)   \
+        TYPE *ss_ ## NAME ## _pop(struct ss_ ## NAME *s)                \
         {                                                               \
-                if (stack_ ## TYPE ## _empty(s))                        \
+                if (ss_ ## NAME ## _empty(s))                           \
                         return NULL;                                    \
                                                                         \
                 --s->sp;                                                \
@@ -50,4 +71,4 @@
                 return s->sp;                                           \
         }
 
-#endif /* STACK_INCL */
+#endif /* SS_INCL */

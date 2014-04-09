@@ -17,7 +17,7 @@ PARTS += uio
 PARTS += scratch
 PARTS += forty
 
-H_PARTS += stack
+H_PARTS += ss
 
 # generated
 OBJ = $(addprefix .build/, $(addsuffix .o, ${PARTS}))
