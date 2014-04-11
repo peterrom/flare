@@ -15,7 +15,7 @@
 
    ... set the buffer to the string ~"01234"~ ...
 
-   : ss.valid_beg = scratch_find_any_of(&ss, "3");
+   : ss.valid_beg += 3;
    : scratch_flush_left(&ss);
 
    This will result in the buffer containing the string ~"34"~. You
@@ -25,6 +25,8 @@
 
    The buffer now contains ~{ '3', '4', '\0' }~ and then ~"567" ...~
    or whatever is in the stream ~is~. */
+
+#include <stdbool.h>
 
 struct uio;
 
@@ -43,7 +45,9 @@ void scratch_flush_left(struct scratch *s);
 /* Fill the region from ~valid_end~ to the end of the buffer from ~is~. */
 void scratch_fill_end(struct scratch *s, struct uio *is);
 
-/* Find a character in the scratch space. Return the position or ~NULL~. */
-char *scratch_find_any_of(const struct scratch *s, const char *characters);
+/* Open a UIO stream to the valid region of the buffer. */
+struct uio scratch_valid(struct scratch *s);
+
+bool scratch_empty(struct scratch *s);
 
 #endif /* SCRATCH_INCL */

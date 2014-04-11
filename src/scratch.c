@@ -37,20 +37,12 @@ void scratch_fill_end(struct scratch *s, struct uio *is)
         s->valid_end += uio_copy(is, &os);
 }
 
-static bool is_any_of(char c, const char *characters)
+struct uio scratch_valid(struct scratch *s)
 {
-        for (; *characters != '\0'; characters++)
-                if (c == *characters)
-                        return true;
-
-        return false;
+        return uio_mbuf_range(s->valid_beg, s->valid_end);
 }
 
-char *scratch_find_any_of(const struct scratch *s, const char *characters)
+bool scratch_empty(struct scratch *s)
 {
-        for (char *i = s->valid_beg; i != s->valid_end; ++i)
-                if (is_any_of(*i, characters))
-                        return i;
-
-        return NULL;
+        return s->valid_beg == s->valid_end;
 }

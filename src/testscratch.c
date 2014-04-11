@@ -64,22 +64,49 @@ tf_TEST(fill_end)
         tf_ASSERT(strcmp(ss.valid_beg, "abcabc") == 0);
 }
 
-tf_TEST(find_any_of)
+tf_TEST(empty)
 {
-        char data[] = "0123456789";
-        struct uio is = uio_mbuf(data, sizeof(data));
-
         struct scratch ss;
         scratch_init(&ss);
 
+        tf_ASSERT(scratch_empty(&ss));
+
+        char data[] = "abc";
+        struct uio is = uio_mbuf(data, sizeof(data));
         scratch_fill_end(&ss, &is);
 
-        tf_ASSERT(scratch_find_any_of(&ss, "abc3") == ss.buffer + 3);
-        tf_ASSERT(scratch_find_any_of(&ss, "abc") == NULL);
+        tf_ASSERT(!scratch_empty(&ss));
 
-        tf_ASSERT(scratch_find_any_of(&ss, "9") == ss.buffer + 9);
-        ss.valid_end -= 2;
-        tf_ASSERT(scratch_find_any_of(&ss, "9") == NULL);
+        ss.valid_beg += sizeof(data);
+        tf_ASSERT(scratch_empty(&ss));
+}
+
+tf_TEST(valid_stream)
+{
+        struct scratch ss;
+        scratch_init(&ss);
+
+        struct uio stream = scratch_valid(&ss);
+        tf_ASSERT(uio_eof(&stream));
+
+        char data[] = "abc";
+        struct uio is = uio_mbuf(data, sizeof(data));
+        scratch_fill_end(&ss, &is);
+
+        stream = scratch_valid(&ss);
+
+        char tmp;
+        tf_ASSERT(uio_get_c(&stream, &tmp) && tmp == 'a');
+        tf_ASSERT(uio_get_c(&stream, &tmp) && tmp == 'b');
+        tf_ASSERT(uio_get_c(&stream, &tmp) && tmp == 'c');
+        tf_ASSERT(uio_get_c(&stream, &tmp) && tmp == '\0');
+        tf_ASSERT(!uio_get_c(&stream, &tmp));
+
+        ss.valid_beg += 3;
+        stream = scratch_valid(&ss);
+
+        tf_ASSERT(uio_get_c(&stream, &tmp) && tmp == '\0');
+        tf_ASSERT(!uio_get_c(&stream, &tmp));
 }
 
 tf_SUITE(scratch)
@@ -87,5 +114,6 @@ tf_SUITE(scratch)
         tf_RUN(init);
         tf_RUN(flush_left);
         tf_RUN(fill_end);
-        tf_RUN(find_any_of);
+        tf_RUN(empty);
+        tf_RUN(valid_stream);
 }
