@@ -19,6 +19,7 @@ struct uio {
 };
 
 struct uio uio_mbuf(void *mbuf, size_t byte_sz);
+struct uio uio_mbuf_range(void *beg, void *end);
 void uio_close(struct uio *s);
 
 bool uio_eof(struct uio *s);

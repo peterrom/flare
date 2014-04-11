@@ -33,7 +33,17 @@ struct uio uio_mbuf(void *mbuf, size_t byte_sz)
 {
         struct uio tmp = {
                 .mbuf = mbuf,
-                .mbuf_end = mbuf + byte_sz
+                .mbuf_end = (char *) mbuf + byte_sz
+        };
+
+        return tmp;
+}
+
+struct uio uio_mbuf_range(void *beg, void *end)
+{
+        struct uio tmp = {
+                .mbuf = beg,
+                .mbuf_end = end
         };
 
         return tmp;
