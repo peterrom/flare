@@ -11,7 +11,7 @@
 # the test for that part but obviously not an object.
 
 # user options
-CFLAGS = -Wall -Wextra
+CFLAGS = -Wall -Wextra -pedantic -g
 
 PARTS += uio
 PARTS += scratch
