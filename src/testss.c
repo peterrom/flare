@@ -15,19 +15,28 @@ tf_TEST(init_empty)
         tf_ASSERT(ss_i_empty(&s));
 }
 
-tf_TEST(push_pop)
+tf_TEST(push_pop_top)
 {
         struct ss_i s;
         ss_i_init(&s);
 
+        tf_ASSERT(!ss_i_top(&s));
+
         tf_ASSERT(ss_i_push(&s, 1));
+        tf_ASSERT(*ss_i_top(&s) == 1);
         tf_ASSERT(ss_i_push(&s, 2));
+        tf_ASSERT(*ss_i_top(&s) == 2);
         tf_ASSERT(ss_i_push(&s, 3));
+        tf_ASSERT(*ss_i_top(&s) == 3);
         tf_ASSERT(!ss_i_push(&s, 4));
+        tf_ASSERT(*ss_i_top(&s) == 3);
 
         tf_ASSERT(*ss_i_pop(&s) == 3);
+        tf_ASSERT(*ss_i_top(&s) == 2);
         tf_ASSERT(*ss_i_pop(&s) == 2);
+        tf_ASSERT(*ss_i_top(&s) == 1);
         tf_ASSERT(*ss_i_pop(&s) == 1);
+        tf_ASSERT(!ss_i_top(&s));
         tf_ASSERT(!ss_i_pop(&s));
 }
 
@@ -78,7 +87,7 @@ tf_TEST(ss_of_pointers)
 tf_SUITE(ss)
 {
         tf_RUN(init_empty);
-        tf_RUN(push_pop);
+        tf_RUN(push_pop_top);
         tf_RUN(ss_of_struct);
         tf_RUN(ss_of_pointers);
 }

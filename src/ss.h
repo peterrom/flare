@@ -21,11 +21,16 @@
    : // Push ~v~ onto the stack. Return ~true~ if successful.
    : static bool ss_i_push(struct ss_i *, int v) { ... }
    :
+   : // Return pointer to top element or ~NULL~.
+   : static int *ss_i_top(struct ss_i *)         { ... }
+   :
    : // Pop stack. Return pointer to the top element or ~NULL~.
    : static int *ss_i_pop(struct ss_i *)         { ... }
 */
 
 #include <stdbool.h>
+
+#include "att.h"
 
 #define SS_DECLARE_STACK(NAME, TYPE, SZ)                                \
                                                                         \
@@ -61,7 +66,16 @@
                 return true;                                            \
         }                                                               \
                                                                         \
-        TYPE *ss_ ## NAME ## _pop(struct ss_ ## NAME *s)                \
+        att_UNUSED                                                       \
+        static TYPE *ss_ ## NAME ## _top(struct ss_ ## NAME *s)         \
+        {                                                               \
+                if (ss_ ## NAME ## _empty(s))                           \
+                        return NULL;                                    \
+                                                                        \
+                return s->sp - 1;                                       \
+        }                                                               \
+                                                                        \
+        static TYPE *ss_ ## NAME ## _pop(struct ss_ ## NAME *s)         \
         {                                                               \
                 if (ss_ ## NAME ## _empty(s))                           \
                         return NULL;                                    \
