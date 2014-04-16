@@ -10,23 +10,24 @@
    chunks. It allows you to easily save parts of a chunk by setting
    the ~scratch.valid_*~ pointers, i.e.
 
+   : struct uio is = ...; // feeds ascending numbers
+   :
    : struct scratch ss;
    : scratch_init(&ss);
+   :
+   : scratch_fill(&ss, &is);
 
-   ... set the buffer to the string ~"01234"~ ...
+   If the scratch buffer had a size of 6 it would now contain ~"012345"~.
 
-   : ss.valid_beg += 3;
-   : scratch_flush_left(&ss);
+   : ss.valid_beg += 2;
+   : ss.valid_end -= 2;
+   :
+   : scratch_fill(&ss);
 
-   This will result in the buffer containing the string ~"34"~. You
-   can then fill the remaining chunk with
-
-   : scratch_fill_end(&ss, &is);
-
-   The buffer now contains ~{ '3', '4', '\0' }~ and then ~"567" ...~
-   or whatever is in the stream ~is~. */
+   This will result in the buffer containing the string ~"236789"~. */
 
 #include <stdbool.h>
+#include <stddef.h>
 
 struct uio;
 
@@ -39,15 +40,24 @@ struct scratch {
 
 void scratch_init(struct scratch *s);
 
-/* Move the valid region to the beginning of the buffer. */
-void scratch_flush_left(struct scratch *s);
+/* Move the valid region of ~s~ to the beginning of the buffer and
+   fill the region between ~s->valid_end~ and the end of the buffer
+   with data from ~is~.
 
-/* Fill the region from ~valid_end~ to the end of the buffer from ~is~. */
-void scratch_fill_end(struct scratch *s, struct uio *is);
+   Return the number of bytes added to ~s~. */
+size_t scratch_fill(struct scratch *s, struct uio *is);
+
+/* Clear the scratch buffer (from valid data). */
+void scratch_clear(struct scratch *s);
 
 /* Open a UIO stream to the valid region of the buffer. */
 struct uio scratch_valid(struct scratch *s);
 
-bool scratch_empty(struct scratch *s);
+/* Return ~true~ if ~*s~ is empty. */
+bool scratch_empty(const struct scratch *s);
+
+/* Return ~true~ if ~*s~ is full, i.e. a call to ~scratch_fill~
+   would return ~0~. */
+bool scratch_full(const struct scratch *s);
 
 #endif /* SCRATCH_INCL */

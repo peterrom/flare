@@ -15,11 +15,9 @@ void scratch_init(struct scratch *s)
         s->valid_end = s->buffer;
 }
 
-void scratch_flush_left(struct scratch *s)
+static void flush_left(struct scratch *s)
 {
-        assert(s->valid_end >= s->valid_beg);
-
-        const size_t n = s->valid_end - s->valid_beg;
+        const size_t n = (size_t) (s->valid_end - s->valid_beg);
         memmove(s->buffer, s->valid_beg, n);
 
         s->valid_beg = s->buffer;
@@ -28,21 +26,54 @@ void scratch_flush_left(struct scratch *s)
 
 static size_t tail_sz(const struct scratch *s)
 {
-        return s->buffer + sizeof(s->buffer) - s->valid_end;
+        return (size_t) (s->buffer + sizeof(s->buffer) - s->valid_end);
 }
 
-void scratch_fill_end(struct scratch *s, struct uio *is)
+static bool is_valid(const struct scratch *s)
 {
+        return
+                s->valid_beg <= s->valid_end &&
+                s->valid_beg >= s->buffer &&
+                s->valid_beg <= s->buffer + sizeof(s->buffer) &&
+                s->valid_end >= s->buffer &&
+                s->valid_end <= s->buffer + sizeof(s->buffer);
+}
+
+size_t scratch_fill(struct scratch *s, struct uio *is)
+{
+        assert(is_valid(s));
+
+        flush_left(s);
+
         struct uio os = uio_mbuf(s->valid_end, tail_sz(s));
-        s->valid_end += uio_copy(is, &os);
+
+        const size_t n = uio_copy(is, &os);
+        s->valid_end += n;
+
+        return n;
+}
+
+void scratch_clear(struct scratch *s)
+{
+        assert(is_valid(s));
+        s->valid_end = s->valid_beg;
 }
 
 struct uio scratch_valid(struct scratch *s)
 {
+        assert(is_valid(s));
         return uio_mbuf_range(s->valid_beg, s->valid_end);
 }
 
-bool scratch_empty(struct scratch *s)
+bool scratch_empty(const struct scratch *s)
 {
+        assert(is_valid(s));
         return s->valid_beg == s->valid_end;
+}
+
+bool scratch_full(const struct scratch *s)
+{
+        assert(is_valid(s));
+        return s->valid_beg == s->buffer &&
+                s->valid_end == s->buffer + sizeof(s->buffer);
 }
