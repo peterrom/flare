@@ -24,7 +24,7 @@
    : // Return pointer to top element or ~NULL~.
    : static int *ss_i_top(struct ss_i *)         { ... }
    :
-   : // Pop stack. Return pointer to the top element or ~NULL~.
+   : // Pop stack. Return pointer to the popped element or ~NULL~.
    : static int *ss_i_pop(struct ss_i *)         { ... }
 */
 
