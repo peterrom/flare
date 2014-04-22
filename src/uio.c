@@ -60,14 +60,18 @@ bool uio_eof(struct uio *s)
 
 size_t uio_copy(struct uio *src, struct uio *dst)
 {
-        for (size_t i = 0;; ++i) {
+        size_t i = 0;
+
+        for (;; ++i) {
                 char tmp;
 
                 if (!uio_peek_c(src, &tmp) || !uio_put_c(dst, tmp))
-                        return i;
+                        break;
 
                 uio_get_c(src, NULL);
         }
+
+        return i;
 }
 
 size_t uio_copy_n(struct uio *src, struct uio *dst, size_t n)
