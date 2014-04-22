@@ -18,6 +18,8 @@ struct uio {
         char *mbuf_end;
 };
 
+struct uio uio_null();
+
 struct uio uio_mbuf(void *mbuf, size_t byte_sz);
 struct uio uio_mbuf_range(void *beg, void *end);
 void uio_close(struct uio *s);

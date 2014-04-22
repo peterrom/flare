@@ -8,6 +8,11 @@
 #include <string.h>
 #include <stdbool.h>
 
+struct uio uio_null()
+{
+        return (struct uio) { 0 };
+}
+
 static bool mbuf_fits(struct uio *s, size_t byte_sz)
 {
         return s->mbuf + byte_sz <= s->mbuf_end;
