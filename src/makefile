@@ -26,7 +26,7 @@ TESTS += $(addprefix .build/test, ${H_PARTS})
 DEPS = $(OBJ:.o=.P) $(addsuffix .P, ${TESTS})
 
 check: ${TESTS}
-	@for t in $^; do echo; echo $${t}; ./$${t}; done
+	@for t in $^; do echo; echo $${t}:; ./$${t}; done
 
 .build/%.P: %.c | .build
 	@echo -n .build/ > $@
