@@ -93,6 +93,27 @@ size_t uio_copy_n(struct uio *src, struct uio *dst, size_t n)
         return n;
 }
 
+bool uio_find(struct uio *s, const void *pattern, size_t byte_sz)
+{
+        const char *const p = pattern;
+        size_t i = 0;
+
+        char tmp;
+
+        while (uio_get_c(s, &tmp)) {
+                if (tmp == p[i]) {
+                        ++i;
+
+                        if (i == byte_sz)
+                                return true;
+                } else {
+                        i = 0;
+                }
+        }
+
+        return false;
+}
+
 #define DEF_PUT_GET_PEEK_FOR(TYPE, SUFF)                \
         bool uio_put_ ## SUFF(struct uio *s, TYPE v)    \
         {                                               \

@@ -106,6 +106,18 @@ tf_TEST(mbuf_copy_is_shorter)
         tf_ASSERT(!uio_eof(&os));
 }
 
+tf_TEST(find)
+{
+        char buffer[] = "a long string with a pattern in it";
+
+        struct uio is = uio_mbuf(buffer, sizeof(buffer));
+
+        tf_ASSERT(uio_find(&is, "pattern", 7));
+        tf_ASSERT(!uio_eof(&is));
+        tf_ASSERT(!uio_find(&is, "pattern", 7));
+        tf_ASSERT(uio_eof(&is));
+}
+
 tf_SUITE(uio)
 {
         tf_RUN(mbuf_put);
@@ -115,4 +127,5 @@ tf_SUITE(uio)
         tf_RUN(mbuf_copy);
         tf_RUN(mbuf_copy_os_shorter);
         tf_RUN(mbuf_copy_is_shorter);
+        tf_RUN(find);
 }

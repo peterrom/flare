@@ -31,6 +31,10 @@ bool uio_eof(struct uio *s);
 size_t uio_copy(struct uio *src, struct uio *dst);
 size_t uio_copy_n(struct uio *src, struct uio *dst, size_t n);
 
+/* Find the first occurrence of ~pattern~ in ~s~. Return true if found.
+   The stream will be positioned directly after the pattern or at eof. */
+bool uio_find(struct uio *s, const void *pattern, size_t byte_sz);
+
 bool uio_put_i(struct uio *s, int v);
 bool uio_get_i(struct uio *s, int *v);
 bool uio_peek_i(struct uio *s, int *v);
