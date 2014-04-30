@@ -11,7 +11,9 @@
 # the test for that part but obviously not an object.
 
 # user options
-CFLAGS = -Wall -Wextra -pedantic -g
+CFLAGS = -Wall -Wextra -pedantic -g -Wshadow -Wwrite-strings   \
+	 -Wswitch-enum -Wswitch-default -Wformat=2 -fno-common \
+	 -Wconversion
 
 PARTS += uio
 PARTS += scratch
@@ -26,26 +28,28 @@ TESTS += $(addprefix .build/test, ${H_PARTS})
 DEPS = $(OBJ:.o=.P) $(addsuffix .P, ${TESTS})
 
 check: ${TESTS}
+	@echo
+	@echo "  Running test suites"
 	@for t in $^; do echo; echo $${t}:; ./$${t}; done
 
 .build/%.P: %.c | .build
 	@echo -n .build/ > $@
-	c99 -MM -MP $< >> $@
+	@c99 -MM -MP $< >> $@
 
 .build/test%: .build/test%.o ${OBJ}
-	c99 $^ -o $@ ${CFLAGS}
+	@echo "  '-- Linking: $@"
+	@c99 $^ -o $@ ${CFLAGS}
+	@echo
 
 .build/%.o: %.c | .build
-	c99 -c $< -o $@ ${CFLAGS}
-
-.build/test%.o: test%.c | .build
-	c99 -c $< -o $@ ${CFLAGS}
+	@echo Building: $@
+	@c99 -c $< -o $@ ${CFLAGS}
 
 .build:
-	mkdir .build
+	@mkdir $@
 
 -include ${DEPS}
 
 .PHONY: clean
 clean:
-	-rm -rf .build
+	@-rm -rf .build
