@@ -31,12 +31,9 @@ static size_t tail_sz(const struct scratch *s)
 
 static bool is_valid(const struct scratch *s)
 {
-        return
-                s->valid_beg <= s->valid_end &&
-                s->valid_beg >= s->buffer &&
-                s->valid_beg <= s->buffer + sizeof(s->buffer) &&
-                s->valid_end >= s->buffer &&
-                s->valid_end <= s->buffer + sizeof(s->buffer);
+	return s->valid_beg <= s->valid_end &&
+		s->valid_beg >= s->buffer &&
+		s->valid_end <= s->buffer + sizeof(s->buffer);
 }
 
 size_t scratch_fill(struct scratch *s, struct uio *is)
