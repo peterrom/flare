@@ -50,9 +50,6 @@ size_t scratch_fill(struct scratch *s, struct uio *is);
 /* Clear the scratch buffer (from valid data). */
 void scratch_clear(struct scratch *s);
 
-/* Open a UIO stream to the valid region of the buffer. */
-struct uio scratch_valid(struct scratch *s);
-
 /* Return ~true~ if ~*s~ is empty. */
 bool scratch_empty(const struct scratch *s);
 

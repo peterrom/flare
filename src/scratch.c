@@ -56,12 +56,6 @@ void scratch_clear(struct scratch *s)
         s->valid_end = s->valid_beg;
 }
 
-struct uio scratch_valid(struct scratch *s)
-{
-        assert(is_valid(s));
-        return uio_mbuf_range(s->valid_beg, s->valid_end);
-}
-
 bool scratch_empty(const struct scratch *s)
 {
         assert(is_valid(s));

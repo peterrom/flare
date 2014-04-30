@@ -57,34 +57,6 @@ tf_TEST(empty)
         tf_ASSERT(scratch_empty(&ss));
 }
 
-tf_TEST(valid)
-{
-        struct scratch ss;
-        scratch_init(&ss);
-
-        struct uio stream = scratch_valid(&ss);
-        tf_ASSERT(uio_eof(&stream));
-
-        char data[] = "abc";
-        struct uio is = uio_mbuf(data, sizeof(data));
-        scratch_fill(&ss, &is);
-
-        stream = scratch_valid(&ss);
-
-        char tmp;
-        tf_ASSERT(uio_get_c(&stream, &tmp) && tmp == 'a');
-        tf_ASSERT(uio_get_c(&stream, &tmp) && tmp == 'b');
-        tf_ASSERT(uio_get_c(&stream, &tmp) && tmp == 'c');
-        tf_ASSERT(uio_get_c(&stream, &tmp) && tmp == '\0');
-        tf_ASSERT(!uio_get_c(&stream, &tmp));
-
-        ss.valid_beg += 3;
-        stream = scratch_valid(&ss);
-
-        tf_ASSERT(uio_get_c(&stream, &tmp) && tmp == '\0');
-        tf_ASSERT(!uio_get_c(&stream, &tmp));
-}
-
 tf_TEST(full)
 {
         struct scratch ss;
@@ -121,7 +93,6 @@ tf_SUITE(scratch)
         tf_RUN(init);
         tf_RUN(fill);
         tf_RUN(empty);
-        tf_RUN(valid);
         tf_RUN(full);
         tf_RUN(clear);
 }
