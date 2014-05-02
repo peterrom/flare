@@ -66,7 +66,7 @@
                 return true;                                            \
         }                                                               \
                                                                         \
-        att_UNUSED                                                       \
+        att_UNUSED                                                      \
         static TYPE *ss_ ## NAME ## _top(struct ss_ ## NAME *s)         \
         {                                                               \
                 if (ss_ ## NAME ## _empty(s))                           \
