@@ -18,16 +18,16 @@
 
    For a hypothetical implementation of the tag "bold".
 
-   Tags are defined through a tag list. Lets implement the bold tag
-   above in ncurses, it would look something like
+   Tags are defined through a tag list. Implementing the bold tag from
+   above in ncurses would look something like
 
    : void push_bold() { attron(A_BOLD); }
    : void pop_bold() { attroff(A_BOLD); }
    :
-   : void print(void *ctx, struct uio *text)
+   : void print(void *ctx, struct ui *text)
    : {
    :         char tmp;
-   :         while (uio_get_c(text, &tmp))
+   :         while (ui_c(text, &tmp))
    :                 printw("%c", tmp);
    : }
    :
@@ -63,7 +63,7 @@
 #include <stddef.h>
 #include <stdbool.h>
 
-struct uio;
+struct ui;
 
 struct forty_tag {
         const char *id;
@@ -76,7 +76,7 @@ struct forty_tag {
    supplied functions called from the parser. */
 void forty_parse(const struct forty_tag *tl,
                  void *context,
-                 void print(void *, struct uio *),
-                 struct uio *is);
+                 void print(void *, struct ui *),
+                 struct ui *is);
 
 #endif /* FORTY_INCL */

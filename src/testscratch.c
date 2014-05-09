@@ -20,7 +20,8 @@ tf_TEST(init)
 tf_TEST(fill)
 {
         char data[] = "abc";
-        struct uio is = uio_mbuf(data, sizeof(data));
+        struct ui is;
+        tf_ASSERT(ui_buf(&is, data, sizeof(data)));
 
         struct scratch ss;
         scratch_init(&ss);
@@ -30,7 +31,7 @@ tf_TEST(fill)
         tf_ASSERT(ss.valid_end == ss.buffer + sizeof(data));
         tf_ASSERT(strcmp(ss.valid_beg, data) == 0);
 
-        is = uio_mbuf(data, sizeof(data));
+        tf_ASSERT(ui_buf(&is, data, sizeof(data)));
         ss.valid_beg++;
         ss.valid_end--;
 
@@ -48,7 +49,8 @@ tf_TEST(empty)
         tf_ASSERT(scratch_empty(&ss));
 
         char data[] = "abc";
-        struct uio is = uio_mbuf(data, sizeof(data));
+        struct ui is;
+        tf_ASSERT(ui_buf(&is, data, sizeof(data)));
         scratch_fill(&ss, &is);
 
         tf_ASSERT(!scratch_empty(&ss));
@@ -65,7 +67,8 @@ tf_TEST(full)
         char data[sizeof(ss.buffer)];
         memset(data, 'c', sizeof(data));
 
-        struct uio is = uio_mbuf(data, sizeof(data));
+        struct ui is;
+        tf_ASSERT(ui_buf(&is, data, sizeof(data)));
         tf_ASSERT(scratch_fill(&ss, &is) == sizeof(ss.buffer));
         tf_ASSERT(scratch_full(&ss));
 
@@ -80,7 +83,8 @@ tf_TEST(clear)
         scratch_init(&ss);
 
         char data[] = "abc";
-        struct uio is = uio_mbuf(data, sizeof(data));
+        struct ui is;
+        tf_ASSERT(ui_buf(&is, data, sizeof(data)));
         scratch_fill(&ss, &is);
 
         tf_ASSERT(!scratch_empty(&ss));

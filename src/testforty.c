@@ -29,13 +29,14 @@ void testforty_state_write_str(struct testforty_state *s, const char *txt)
         s->pos += n;
 }
 
-void testforty_state_write_uio(struct testforty_state *s, struct uio *txt)
+void testforty_state_write_uio(struct testforty_state *s, struct ui *txt)
 {
-        struct uio buf = uio_mbuf(s->pos, testforty_state_remaining(s));
+        struct uo buf;
+        uo_buf(&buf, s->pos, testforty_state_remaining(s));
         s->pos += uio_copy(txt, &buf);
 }
 
-void testforty_state_print(void *context, struct uio *arg)
+void testforty_state_print(void *context, struct ui *arg)
 {
         struct testforty_state *s = context;
         testforty_state_write_uio(s, arg);
@@ -88,12 +89,9 @@ bool testforty_intrp(const char *input, const char *expected)
         struct testforty_state state;
         testforty_state_init(&state);
 
-        const size_t input_sz = strlen(input);
-        char input_copy[input_sz];
+        struct ui is;
+        ui_buf(&is, input, strlen(input));
 
-        memcpy(input_copy, input, input_sz);
-
-        struct uio is = uio_mbuf(input_copy, input_sz);
         forty_parse(testforty_tl, &state, testforty_state_print, &is);
 
         return strncmp(state.buffer, expected, strlen(expected)) == 0;

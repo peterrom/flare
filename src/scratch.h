@@ -10,7 +10,7 @@
    chunks. It allows you to easily save parts of a chunk by setting
    the ~scratch.valid_*~ pointers, i.e.
 
-   : struct uio is = ...; // feeds ascending numbers
+   : struct ui is = ...; // feeds ascending numbers
    :
    : struct scratch ss;
    : scratch_init(&ss);
@@ -29,7 +29,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-struct uio;
+struct ui;
 
 struct scratch {
         char buffer[32];
@@ -45,7 +45,7 @@ void scratch_init(struct scratch *s);
    with data from ~is~.
 
    Return the number of bytes added to ~s~. */
-size_t scratch_fill(struct scratch *s, struct uio *is);
+size_t scratch_fill(struct scratch *s, struct ui *is);
 
 /* Clear the scratch buffer (from valid data). */
 void scratch_clear(struct scratch *s);

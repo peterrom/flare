@@ -116,12 +116,15 @@ static char *first_brace_or_end(char *beg, char *end)
 }
 
 static char *handle_text(struct scratch *s,
-                         void *context, void print(void *, struct uio *))
+                         void *context, void print(void *, struct ui *))
 {
         char *end = first_brace_or_end(s->valid_beg, s->valid_end);
 
         if (print) {
-                struct uio arg = uio_mbuf_range(s->valid_beg, end);
+                assert(end >= s->valid_beg);
+
+                struct ui arg;
+                ui_buf(&arg, s->valid_beg, (size_t) (end - s->valid_beg));
                 print(context, &arg);
         }
 
@@ -166,7 +169,7 @@ static char *handle_tag(struct scratch *s, void *context,
 static bool parse_scratch(struct scratch *s, struct ss_ts *ts,
                           const struct forty_tag *tl,
                           void *context,
-                          void print(void *, struct uio *))
+                          void print(void *, struct ui *))
 {
         while (!scratch_empty(s)) {
                 char *end;
@@ -192,17 +195,17 @@ static bool parse_scratch(struct scratch *s, struct ss_ts *ts,
         return true;
 }
 
-static void reset_state(struct uio *is, struct scratch *s, struct ss_ts *ts)
+static void reset_state(struct ui *is, struct scratch *s, struct ss_ts *ts)
 {
-        uio_find(is, " ", 1);
+        ui_find(is, " ", 1);
         scratch_clear(s);
         push_invalid(ts);
 }
 
 void forty_parse(const struct forty_tag *tl,
                  void *context,
-                 void print(void *, struct uio *),
-                 struct uio *is)
+                 void print(void *, struct ui *),
+                 struct ui *is)
 {
         struct scratch s;
         scratch_init(&s);
