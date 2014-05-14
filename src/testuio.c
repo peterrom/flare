@@ -78,6 +78,9 @@ tf_TEST(buf_copy)
 
         tf_ASSERT(uio_copy_n(&is, &os, sizeof(int)) == sizeof(int) &&
                   buffer1[0] == 3);
+
+        int tmp;
+        tf_ASSERT(ui_i(&is, &tmp) && tmp == 4);
 }
 
 tf_TEST(buf_copy_os_shorter)
