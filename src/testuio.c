@@ -134,6 +134,11 @@ tf_TEST(find)
         tf_ASSERT(ui_eof(&is));
 }
 
+tf_TEST(cb_rw_wraparound)
+{
+        tf_ASSERT(!"implemented!");
+}
+
 tf_SUITE(uio)
 {
         tf_RUN(buf_put);
@@ -144,4 +149,5 @@ tf_SUITE(uio)
         tf_RUN(buf_copy_os_shorter);
         tf_RUN(buf_copy_is_shorter);
         tf_RUN(find);
+        tf_RUN(cb_rw_wraparound);
 }
