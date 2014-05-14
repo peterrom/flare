@@ -60,10 +60,10 @@ bool uo_i(struct uo *os, int v);
 bool ui_i(struct ui *is, int *v);
 bool ui_i_peek(struct ui *is, int *v);
 
-/* The layout of ~struct ui~ and ~struct uo~ is presented here since
+/* The layout of ~struct ui~ and ~struct uo~ are presented here since
    we want to be able to place them on the stack. They should however
    be treated as opaque objects; accessing or modifying them directly
-   is undefined behaviour. */
+   results undefined behaviour when using the UIO API. */
 
 struct uio_cb {
         size_t w;
