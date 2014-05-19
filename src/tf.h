@@ -34,8 +34,10 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <setjmp.h>
 
 char tf_g_fail[256] = "";
+jmp_buf tf_g_jump_buffer;
 
 #define tf_ASSERT(cond)                                                 \
         do {                                                            \
@@ -43,7 +45,8 @@ char tf_g_fail[256] = "";
                         snprintf(tf_g_fail, 256,                        \
                                  "\n" __FILE__ ":%d:1\t\t(" #cond ")"   \
                                  " == false", __LINE__);                \
-                        return;                                         \
+                                                                        \
+                        longjmp(tf_g_jump_buffer, 1);                   \
                 }                                                       \
         } while (0);
 
@@ -65,7 +68,9 @@ void tf_report_result(const char *name)
 
 #define tf_RUN(name)                            \
         do {                                    \
-                name();                         \
+                if (!setjmp(tf_g_jump_buffer))  \
+                        name();                 \
+                                                \
                 tf_report_result(#name);        \
         } while (0);
 
