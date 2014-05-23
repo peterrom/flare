@@ -56,22 +56,25 @@ jmp_buf tf_g_jump_buffer;
 #define tf_SUITE(name)                          \
         void tf_test_list(void)
 
-void tf_report_result(const char *name)
+void tf_report_result()
 {
         if (strlen(tf_g_fail) > 0) {
-                printf("%-42s failed! <<<<<<<<\n%s\n\n", name, tf_g_fail);
+                printf(" failed! <<<<<<<<\n%s\n\n", tf_g_fail);
                 tf_g_fail[0] = '\0';
         } else {
-                printf("%-42s passed!\n", name);
+                printf(" passed!\n");
         }
 }
 
 #define tf_RUN(name)                            \
         do {                                    \
+                printf("%-42s", #name);         \
+                fflush(stdout);                 \
+                                                \
                 if (!setjmp(tf_g_jump_buffer))  \
                         name();                 \
                                                 \
-                tf_report_result(#name);        \
+                tf_report_result();             \
         } while (0);
 
 void tf_test_list(void);
