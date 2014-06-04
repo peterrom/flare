@@ -26,6 +26,23 @@
 
    and that's it!
 
+   If one of your tests needs some kind of cleanup in the case of a
+   triggered ~tf_ASSERT~, that can be accomplished by the
+   ~tf_IN_CASE_OF_ASSERT~ macro, i.e.
+
+   : tf_TEST(some_test)
+   : {
+   :         global_array = malloc(huge_number);
+   :
+   :         tf_IN_CASE_OF_ASSERT(
+   :                 free(global_array);
+   :                 );
+   :
+   :         // perform tests
+   :
+   :         free(global_array);
+   : }
+
    Since tf_SUITE sets up a ~main~ function, TF is limited to one suite
    per ~.c~ file.
 
@@ -37,7 +54,9 @@
 #include <setjmp.h>
 
 char tf_g_fail[256] = "";
-jmp_buf tf_g_jump_buffer;
+
+jmp_buf tf_g_jump_buffer1;
+jmp_buf tf_g_jump_buffer2;
 
 #define tf_ASSERT(cond)                                                 \
         do {                                                            \
@@ -46,9 +65,18 @@ jmp_buf tf_g_jump_buffer;
                                  "\n" __FILE__ ":%d:1\t\t(" #cond ")"   \
                                  " == false", __LINE__);                \
                                                                         \
-                        longjmp(tf_g_jump_buffer, 1);                   \
+                        longjmp(tf_g_jump_buffer2, 1);                  \
                 }                                                       \
         } while (0);
+
+#define tf_IN_CASE_OF_ASSERT(body)                      \
+        do {                                            \
+                if (setjmp(tf_g_jump_buffer2)) {        \
+                        body;                           \
+                                                        \
+                        longjmp(tf_g_jump_buffer1, 1);  \
+                }                                       \
+        } while (0);                                    \
 
 #define tf_TEST(name)                           \
         void name(void)
@@ -66,15 +94,16 @@ void tf_report_result()
         }
 }
 
-#define tf_RUN(name)                            \
-        do {                                    \
-                printf("%-42s", #name);         \
-                fflush(stdout);                 \
-                                                \
-                if (!setjmp(tf_g_jump_buffer))  \
-                        name();                 \
-                                                \
-                tf_report_result();             \
+#define tf_RUN(name)                                    \
+        do {                                            \
+                printf("%-42s", #name);                 \
+                fflush(stdout);                         \
+                                                        \
+                if (!setjmp(tf_g_jump_buffer1))         \
+                        if (!setjmp(tf_g_jump_buffer2)) \
+                                name();                 \
+                                                        \
+                tf_report_result();                     \
         } while (0);
 
 void tf_test_list(void);
