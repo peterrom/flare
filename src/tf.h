@@ -42,7 +42,7 @@ jmp_buf tf_g_jump_buffer;
 #define tf_ASSERT(cond)                                                 \
         do {                                                            \
                 if (!(cond)) {                                          \
-                        snprintf(tf_g_fail, 256,                        \
+                        snprintf(tf_g_fail, sizeof(tf_g_fail),          \
                                  "\n" __FILE__ ":%d:1\t\t(" #cond ")"   \
                                  " == false", __LINE__);                \
                                                                         \
