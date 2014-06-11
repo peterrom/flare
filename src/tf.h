@@ -87,7 +87,7 @@ jmp_buf tf_g_jump_buffer2;
 #define tf_SUITE(name)                          \
         void tf_test_list(void)
 
-void tf_report_result()
+void tf_report_result(void)
 {
         if (strlen(tf_g_fail) > 0) {
                 printf(" failed! <<<<<<<<\n%s\n\n", tf_g_fail);
