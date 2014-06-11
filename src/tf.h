@@ -58,8 +58,8 @@
 
 char tf_g_fail[256];
 
-jmp_buf tf_g_jump_buffer1;
-jmp_buf tf_g_jump_buffer2;
+jmp_buf tf_g_run_site;
+jmp_buf tf_g_overridable;
 
 #define tf_ASSERT(cond)                                                 \
         do {                                                            \
@@ -68,16 +68,16 @@ jmp_buf tf_g_jump_buffer2;
                                  "\n" __FILE__ ":%d:1\t\t(" #cond ")"   \
                                  " == false", __LINE__);                \
                                                                         \
-                        longjmp(tf_g_jump_buffer2, 1);                  \
+                        longjmp(tf_g_overridable, 1);                   \
                 }                                                       \
         } while (0);
 
 #define tf_IN_CASE_OF_ASSERT(body)                      \
         do {                                            \
-                if (setjmp(tf_g_jump_buffer2)) {        \
+                if (setjmp(tf_g_overridable)) {         \
                         { body }                        \
                                                         \
-                        longjmp(tf_g_jump_buffer1, 1);  \
+                        longjmp(tf_g_run_site, 1);      \
                 }                                       \
         } while (0);                                    \
 
@@ -102,8 +102,8 @@ void tf_report_result(void)
                 printf("%-42s", #name);                 \
                 fflush(stdout);                         \
                                                         \
-                if (!setjmp(tf_g_jump_buffer1))         \
-                        if (!setjmp(tf_g_jump_buffer2)) \
+                if (!setjmp(tf_g_run_site))             \
+                        if (!setjmp(tf_g_overridable))  \
                                 name();                 \
                                                         \
                 tf_report_result();                     \
