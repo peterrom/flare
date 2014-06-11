@@ -56,7 +56,7 @@
 #include <string.h>
 #include <setjmp.h>
 
-char tf_g_fail[256] = "";
+char tf_g_fail[256];
 
 jmp_buf tf_g_jump_buffer1;
 jmp_buf tf_g_jump_buffer2;
