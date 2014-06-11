@@ -43,11 +43,14 @@
    :         free(global_array);
    : }
 
-   Since tf_SUITE sets up a ~main~ function, TF is limited to one suite
-   per ~.c~ file.
+   Note that only the last defined ~tf_IN_CASE_OF_ASSERT~ will be run.
 
-   The suites are designed to be run in an emacs compilation buffer. That
-   is why failure messages are formatted as compilation errors. */
+   Since TF sets up a ~main~ function, you are limited to one test
+   suite per ~.c~ file.
+
+   TF is designed to be run in an emacs compilation buffer, i.e. M-x
+   compile <RET> make check. This is why failure messages are
+   formatted as compilation errors. */
 
 #include <stdio.h>
 #include <string.h>
