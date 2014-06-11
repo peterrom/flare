@@ -42,6 +42,10 @@ size_t uo_flush(struct uo *os);
 bool ui_eof(struct ui *is);
 bool uo_eof(struct uo *os);
 
+/* Return a pointer to the first input stream where data is available
+   or NULL in case of a timeout. */
+/* struct ui *ui_select(long timeout_us, struct ui *is1, ...); */
+
 /* Copy all or ~n~ bytes from ~src~ to ~dst~. Return the number of
    bytes copied. */
 size_t uio_copy(struct ui *src, struct uo *dst);
