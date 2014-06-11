@@ -75,7 +75,7 @@ jmp_buf tf_g_jump_buffer2;
 #define tf_IN_CASE_OF_ASSERT(body)                      \
         do {                                            \
                 if (setjmp(tf_g_jump_buffer2)) {        \
-                        body;                           \
+                        { body }                        \
                                                         \
                         longjmp(tf_g_jump_buffer1, 1);  \
                 }                                       \
