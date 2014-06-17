@@ -27,7 +27,7 @@
    : void print(void *ctx, struct ui *text)
    : {
    :         char tmp;
-   :         while (ui_c(text, &tmp))
+   :         while (ui_get_c(text, &tmp))
    :                 printw("%c", tmp);
    : }
    :

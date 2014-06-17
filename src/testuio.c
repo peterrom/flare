@@ -35,7 +35,7 @@ bool testuio_is_ascending_buf(int first, int last)
         int tmp;
 
         for (int i = first; i <= last; ++i) {
-                const bool res = ui_i(&is, &tmp);
+                const bool res = ui_get_i(&is, &tmp);
 
                 /* printf("\ni == %d: res == %d, tmp == %d", i, res, tmp); */
 
@@ -51,7 +51,7 @@ void testuio_get_put(struct ui *is, struct uo *os)
         size_t n = 0;
 
         int tmp;
-        while (ui_i(is, &tmp) && uo_i(os, tmp))
+        while (ui_get_i(is, &tmp) && uo_put_i(os, tmp))
                 n++;
 
         uo_flush(os);

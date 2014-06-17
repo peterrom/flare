@@ -56,13 +56,13 @@ size_t uio_copy_n(struct ui *src, struct uo *dst, size_t n);
    at eof. */
 bool ui_find(struct ui *is, const void *pattern, size_t byte_sz);
 
-bool uo_c(struct uo *os, char v);
-bool ui_c(struct ui *is, char *v);
-bool ui_c_peek(struct ui *is, char *v);
+bool uo_put_c(struct uo *os, char v);
+bool ui_get_c(struct ui *is, char *v);
+bool ui_peek_c(struct ui *is, char *v);
 
-bool uo_i(struct uo *os, int v);
-bool ui_i(struct ui *is, int *v);
-bool ui_i_peek(struct ui *is, int *v);
+bool uo_put_i(struct uo *os, int v);
+bool ui_get_i(struct ui *is, int *v);
+bool ui_peek_i(struct ui *is, int *v);
 
 /* The layout of ~struct ui~ and ~struct uo~ are presented here since
    we want to be able to place them on the stack. They should however

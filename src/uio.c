@@ -276,10 +276,10 @@ size_t uio_copy_n(struct ui *src, struct uo *dst, size_t n)
         for (size_t i = 0; i < n; ++i) {
                 char tmp;
 
-                if (!ui_c_peek(src, &tmp) || !uo_c(dst, tmp))
+                if (!ui_peek_c(src, &tmp) || !uo_put_c(dst, tmp))
                         return i;
 
-                ui_c(src, NULL);
+                ui_get_c(src, NULL);
         }
 
         uo_flush(dst);
@@ -293,7 +293,7 @@ bool ui_find(struct ui *is, const void *pattern, size_t byte_sz)
 
         char tmp;
 
-        while (ui_c(is, &tmp)) {
+        while (ui_get_c(is, &tmp)) {
                 if (tmp == p[i]) {
                         ++i;
 
@@ -307,23 +307,23 @@ bool ui_find(struct ui *is, const void *pattern, size_t byte_sz)
         return false;
 }
 
-#define DEF_PUT_GET_PEEK(TYPE, SUFF)                            \
-        bool uo_ ## SUFF(struct uo *os, TYPE v)                 \
-        {                                                       \
-                return bio_write(os, &v, sizeof(v));            \
-        }                                                       \
-                                                                \
-        bool ui_ ## SUFF(struct ui *is, TYPE *v)                \
-        {                                                       \
-                if (v && !bio_peek(is, v, sizeof(*v)))          \
-                        return false;                           \
-                                                                \
-                return bio_pop(is, sizeof(*v));                 \
-        }                                                       \
-                                                                \
-        bool ui_ ## SUFF ## _peek(struct ui *is, TYPE *v)       \
-        {                                                       \
-                return bio_peek(is, v, sizeof(*v));             \
+#define DEF_PUT_GET_PEEK(TYPE, SUFF)                    \
+        bool uo_put_ ## SUFF(struct uo *os, TYPE v)     \
+        {                                               \
+                return bio_write(os, &v, sizeof(v));    \
+        }                                               \
+                                                        \
+        bool ui_get_ ## SUFF(struct ui *is, TYPE *v)    \
+        {                                               \
+                if (v && !bio_peek(is, v, sizeof(*v)))  \
+                        return false;                   \
+                                                        \
+                return bio_pop(is, sizeof(*v));         \
+        }                                               \
+                                                        \
+        bool ui_peek_ ## SUFF(struct ui *is, TYPE *v)   \
+        {                                               \
+                return bio_peek(is, v, sizeof(*v));     \
         }
 
 DEF_PUT_GET_PEEK(char, c)
