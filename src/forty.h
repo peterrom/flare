@@ -21,8 +21,8 @@
    Tags are defined through a tag list. Implementing the bold tag from
    above in ncurses would look something like
 
-   : void push_bold() { attron(A_BOLD); }
-   : void pop_bold() { attroff(A_BOLD); }
+   : void push_bold(void *ctx) { attron(A_BOLD); }
+   : void pop_bold(void *ctx) { attroff(A_BOLD); }
    :
    : void print(void *ctx, struct ui *text)
    : {
