@@ -5,152 +5,119 @@
 #include "tf.h"
 #include "uio.h"
 
-tf_TEST(buf_put)
+int testuio_asc_mem[] = { 0,  1,  2,  3,  4,  5,  6,  7,
+                          8,  9,  10, 11, 12, 13, 14, 15,
+                          16, 17, 18, 19, 20, 21, 22, 23,
+                          24, 25, 26, 27, 28, 29, 30, 31,
+                          32, 33, 34, 35, 36, 37, 38, 39 };
+
+int testuio_buffer[1024];
+
+void testuio_init_ibuf(struct ui *is, size_t n)
 {
-        int buffer[] = { 0, 0 };
-        struct uo os;
-        tf_ASSERT(uo_buf(&os, buffer, sizeof(buffer)));
-
-        tf_ASSERT(uo_i(&os, 1) && uo_flush(&os) == 4 && buffer[0] == 1);
-        tf_ASSERT(uo_i(&os, 2) && uo_flush(&os) == 4 && buffer[1] == 2);
-
-        uo_i(&os, 3);
-        tf_ASSERT(uo_flush(&os) == 0);
-
-        tf_ASSERT(buffer[0] == 1 && buffer[1] == 2);
+        tf_ASSERT(n * sizeof(int) <= sizeof(testuio_asc_mem));
+        tf_ASSERT(ui_buf(is, testuio_asc_mem, n * sizeof(int)));
 }
 
-tf_TEST(buf_get)
+void testuio_init_obuf(struct uo *os, size_t n)
 {
-        int buffer[] = { 1, 2 };
+        memset(testuio_buffer, 0xff, sizeof(testuio_buffer));
 
+        tf_ASSERT(n <= sizeof(testuio_buffer));
+        tf_ASSERT(uo_buf(os, testuio_buffer, n * sizeof(int)));
+}
+
+bool testuio_is_ascending_buf(int first, int last)
+{
         struct ui is;
-        tf_ASSERT(ui_buf(&is, buffer, sizeof(buffer)));
+        ui_buf(&is, testuio_buffer, sizeof(testuio_buffer));
 
         int tmp;
-        tf_ASSERT(ui_i(&is, &tmp) && tmp == 1);
-        tf_ASSERT(ui_i(&is, &tmp) && tmp == 2);
-        tf_ASSERT(!ui_i(&is, &tmp) && tmp == 2);
+
+        for (int i = first; i <= last; ++i) {
+                const bool res = ui_i(&is, &tmp);
+
+                /* printf("\ni == %d: res == %d, tmp == %d", i, res, tmp); */
+
+                if (!res || tmp != i)
+                        return false;
+        }
+
+        return true;
 }
 
-tf_TEST(buf_peek)
+void testuio_get_put(struct ui *is, struct uo *os)
 {
-        int buffer[] = { 1, 2 };
-
-        struct ui is;
-        tf_ASSERT(ui_buf(&is, buffer, sizeof(buffer)));
-        int tmp;
-
-        tf_ASSERT(ui_i_peek(&is, &tmp) && tmp == 1);
-        tf_ASSERT(ui_i_peek(&is, &tmp) && tmp == 1);
-        tf_ASSERT(ui_i(&is, NULL));
-        tf_ASSERT(ui_i_peek(&is, &tmp) && tmp == 2);
-        tf_ASSERT(ui_i_peek(&is, &tmp) && tmp == 2);
-        tf_ASSERT(ui_i(&is, NULL));
-        tf_ASSERT(!ui_i_peek(&is, &tmp));
-        tf_ASSERT(!ui_i(&is, NULL));
-}
-
-tf_TEST(buf_eof)
-{
-        int buffer[] = { 1, 2 };
-
-        struct ui is;
-        tf_ASSERT(ui_buf(&is, buffer, sizeof(buffer)));
-
-        tf_ASSERT(!ui_eof(&is));
-        tf_ASSERT(ui_i(&is, NULL));
-        tf_ASSERT(!ui_eof(&is));
-        tf_ASSERT(ui_i(&is, NULL));
-        tf_ASSERT(ui_eof(&is));
-}
-
-tf_TEST(buf_copy)
-{
-        int buffer1[] = { 1, 2 };
-        int buffer2[] = { 3, 4, 5 };
-
-        struct uo os;
-        tf_ASSERT(uo_buf(&os, buffer1, sizeof(buffer1)));
-
-        struct ui is;
-        tf_ASSERT(ui_buf(&is, buffer2, sizeof(buffer2)));
-
-        tf_ASSERT(uio_copy_n(&is, &os, sizeof(int)) == sizeof(int) &&
-                  buffer1[0] == 3);
+        size_t n = 0;
 
         int tmp;
-        tf_ASSERT(ui_i(&is, &tmp) && tmp == 4);
+        while (ui_i(is, &tmp) && uo_i(os, tmp))
+                n++;
+
+        uo_flush(os);
 }
 
-tf_TEST(buf_copy_os_shorter)
+void testuio_copy(struct ui *is, struct uo *os)
 {
-        int buffer1[] = { 1, 2 };
-        int buffer2[] = { 3, 4, 5 };
+        uio_copy(is, os);
+}
 
+struct testuio_subtest {
+        void (*f) (struct ui *, struct uo *);
+
+        const size_t is_size;
+        const size_t os_size;
+
+        const int res_first;
+        const int res_last;
+};
+
+void testuio_subsuite(void init_is(struct ui *, size_t),
+                      void init_os(struct uo *, size_t),
+                      bool is_ascending(int, int))
+{
+        struct ui is;
         struct uo os;
-        tf_ASSERT(uo_buf(&os, buffer1, sizeof(buffer1)));
 
-        struct ui is;
-        tf_ASSERT(ui_buf(&is, buffer2, sizeof(buffer2)));
+        const struct testuio_subtest subtests[] = {
+                { testuio_get_put, 40, 40, 0, 39 },
+                { testuio_get_put, 20, 40, 0, 19 },
+                { testuio_get_put, 40, 20, 0, 19 },
+                { testuio_copy, 40, 40, 0, 39 },
+                { testuio_copy, 20, 40, 0, 19 },
+                { testuio_copy, 40, 20, 0, 19 },
+                { NULL, 0, 0, 0, 0 } /* sentinel */
+        };
 
-        tf_ASSERT(uio_copy(&is, &os) == sizeof(buffer1));
-        tf_ASSERT(
-                buffer1[0] == 3 &&
-                buffer1[1] == 4);
+        for (const struct testuio_subtest *st = subtests; st->f; ++st) {
+                init_is(&is, st->is_size);
 
-        int tmp;
-        tf_ASSERT(ui_i(&is, &tmp) && tmp == 5);
-        tf_ASSERT(uo_eof(&os));
+                tf_IN_CASE_OF_ASSERT(
+                        ui_close(&is);
+                        );
+
+                init_os(&os, st->os_size);
+
+                tf_IN_CASE_OF_ASSERT(
+                        ui_close(&is);
+                        uo_close(&os);
+                        );
+
+                st->f(&is, &os);
+                tf_ASSERT(is_ascending(st->res_first, st->res_last));
+
+                ui_close(&is);
+                uo_close(&os);
+        }
 }
 
-tf_TEST(buf_copy_is_shorter)
+tf_TEST(buf_buf)
 {
-        int buffer1[] = { 1, 2, 3 };
-        int buffer2[] = { 4, 5 };
-
-        struct uo os;
-        tf_ASSERT(uo_buf(&os, buffer1, sizeof(buffer1)));
-
-        struct ui is;
-        tf_ASSERT(ui_buf(&is, buffer2, sizeof(buffer2)));
-
-        tf_ASSERT(uio_copy(&is, &os) == sizeof(buffer2) &&
-                  buffer1[0] == 4 &&
-                  buffer1[1] == 5 &&
-                  buffer1[2] == 3);
-
-        tf_ASSERT(ui_eof(&is));
-        tf_ASSERT(!uo_eof(&os));
-}
-
-tf_TEST(find)
-{
-        char buffer[] = "a long string with a pattern in it";
-
-        struct ui is;
-        tf_ASSERT(ui_buf(&is, buffer, sizeof(buffer)));
-
-        tf_ASSERT(ui_find(&is, "pattern", 7));
-        tf_ASSERT(!ui_eof(&is));
-        tf_ASSERT(!ui_find(&is, "pattern", 7));
-        tf_ASSERT(ui_eof(&is));
-}
-
-tf_TEST(cb_rw_wraparound)
-{
-        tf_ASSERT(!"implemented!");
+        testuio_subsuite(testuio_init_ibuf, testuio_init_obuf,
+                         testuio_is_ascending_buf);
 }
 
 tf_SUITE(uio)
 {
-        tf_RUN(buf_put);
-        tf_RUN(buf_get);
-        tf_RUN(buf_peek);
-        tf_RUN(buf_eof);
-        tf_RUN(buf_copy);
-        tf_RUN(buf_copy_os_shorter);
-        tf_RUN(buf_copy_is_shorter);
-        tf_RUN(find);
-        tf_RUN(cb_rw_wraparound);
+        tf_RUN(buf_buf);
 }
