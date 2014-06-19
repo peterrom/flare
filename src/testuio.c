@@ -106,6 +106,12 @@ void testuio_subsuite(void init_is(struct ui *, size_t),
                 st->f(&is, &os);
                 tf_ASSERT(is_ascending(st->res_first, st->res_last));
 
+                if (st->is_size <= st->os_size)
+                        tf_ASSERT(ui_eof(&is));
+
+                if (st->is_size >= st->os_size)
+                        tf_ASSERT(uo_eof(&os));
+
                 ui_close(&is);
                 uo_close(&os);
         }
