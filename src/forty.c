@@ -43,11 +43,14 @@ static void pop_tag(struct ss_ts *ts, int *alt_ts, void *context)
 
 static void pop_remaining(struct ss_ts *ts, void *context)
 {
-        while (!ss_ts_empty(ts)) {
-                const struct forty_tag *e = *ss_ts_pop(ts);
+        const struct forty_tag **element;
 
-                if (e && e->pop)
-                        e->pop(context);
+        while ((element = ss_ts_pop(ts))) {
+                const struct forty_tag *tag = *element;
+
+                if (tag && tag->pop)
+                        tag->pop(context);
+
         }
 }
 
@@ -77,13 +80,12 @@ static char *first_brace_or_end(char *beg, char *end)
 static char *handle_text(struct scratch *s,
                          void *context, void print(void *, struct ui *))
 {
-        char *end = first_brace_or_end(s->valid_beg, s->valid_end);
+        char *const end = first_brace_or_end(s->valid_beg, s->valid_end);
 
         if (print) {
-                assert(end >= s->valid_beg);
-
                 struct ui arg;
                 ui_buf(&arg, s->valid_beg, (size_t) (end - s->valid_beg));
+
                 print(context, &arg);
         }
 
@@ -93,33 +95,35 @@ static char *handle_text(struct scratch *s,
 static char *handle_pops(struct scratch *s, void *context,
                          struct ss_ts *ts, int *alt_ts)
 {
-        char *end = s->valid_beg;
-        for (; end != s->valid_end && *end == '}'; ++end)
+        char *i = s->valid_beg;
+
+        for (; i != s->valid_end && *i == '}'; ++i)
                 pop_tag(ts, alt_ts, context);
 
-        return end;
+        return i;
 }
 
 static char *tag_end_or_end(char *beg, char *end)
 {
-        while (beg != end && *beg != ' ')
-                ++beg;
+        char *i = beg;
+        while (i != end && *i != ' ')
+                ++i;
 
-        return beg;
+        return i;
 }
 
 static char *handle_tag(struct scratch *s, void *context,
                         const struct forty_tag *tl,
                         struct ss_ts *ts, int *alt_ts)
 {
-        char *const beg = s->valid_beg + 1;
-        char *const tag_end = tag_end_or_end(beg, s->valid_end);
+        char *const tag_beg = s->valid_beg + 1;
+        char *const tag_end = tag_end_or_end(tag_beg, s->valid_end);
 
         if (tag_end == s->valid_end)
                 return NULL;
 
         const struct forty_tag *tag =
-                tl_find(tl, beg, (size_t) (tag_end - beg));
+                tl_find(tl, tag_beg, (size_t) (tag_end - tag_beg));
 
         push_tag(ts, alt_ts, tag, context);
 
