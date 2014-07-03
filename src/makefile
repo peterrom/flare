@@ -16,7 +16,6 @@ CFLAGS = -Wall -Wextra -pedantic -g -Wshadow -Wwrite-strings   \
 	 -Wconversion
 
 PARTS += uio
-PARTS += scratch
 PARTS += forty
 
 H_PARTS += ss
