@@ -2,14 +2,16 @@
    This file is part of Flare which is licensed under GNU GPL v3.
    See the file named LICENSE for details. */
 
+#include <assert.h>
+
 #include "tf.h"
 #include "uio.h"
 
-int testuio_asc_mem[] = { 0,  1,  2,  3,  4,  5,  6,  7,
-                          8,  9,  10, 11, 12, 13, 14, 15,
-                          16, 17, 18, 19, 20, 21, 22, 23,
-                          24, 25, 26, 27, 28, 29, 30, 31,
-                          32, 33, 34, 35, 36, 37, 38, 39 };
+const int testuio_asc_mem[] = { 0,  1,  2,  3,  4,  5,  6,  7,
+                                8,  9,  10, 11, 12, 13, 14, 15,
+                                16, 17, 18, 19, 20, 21, 22, 23,
+                                24, 25, 26, 27, 28, 29, 30, 31,
+                                32, 33, 34, 35, 36, 37, 38, 39 };
 
 int testuio_buffer[1024];
 
@@ -62,6 +64,17 @@ void testuio_copy(struct ui *is, struct uo *os)
         uio_copy(is, os);
 }
 
+static size_t testuio_peek_less_than_33(struct ui *is)
+{
+        int tmp;
+        return (ui_peek_i(is, &tmp) && tmp < 33) ? sizeof(int) : 0;
+}
+
+void testuio_copy_while(struct ui *is, struct uo *os)
+{
+        uio_copy_while(is, os, testuio_peek_less_than_33);
+}
+
 struct testuio_subtest {
         void (*f) (struct ui *, struct uo *);
 
@@ -86,6 +99,7 @@ void testuio_subsuite(void init_is(struct ui *, size_t),
                 { testuio_copy, 40, 40, 0, 39 },
                 { testuio_copy, 20, 40, 0, 19 },
                 { testuio_copy, 40, 20, 0, 19 },
+                { testuio_copy_while, 40, 40, 0, 32 },
                 { NULL, 0, 0, 0, 0 } /* sentinel */
         };
 
@@ -106,10 +120,14 @@ void testuio_subsuite(void init_is(struct ui *, size_t),
                 st->f(&is, &os);
                 tf_ASSERT(is_ascending(st->res_first, st->res_last));
 
-                if (st->is_size <= st->os_size)
+                assert(st->res_last >= st->res_first);
+                const size_t res_size =
+                        (size_t) (st->res_last - st->res_first) + 1;
+
+                if (st->is_size <= res_size)
                         tf_ASSERT(ui_eof(&is));
 
-                if (st->is_size >= st->os_size)
+                if (st->os_size <= res_size)
                         tf_ASSERT(uo_eof(&os));
 
                 ui_close(&is);

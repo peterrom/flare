@@ -51,6 +51,11 @@ bool uo_eof(struct uo *os);
 size_t uio_copy(struct ui *src, struct uo *dst);
 size_t uio_copy_n(struct ui *src, struct uo *dst, size_t n);
 
+/* Copy data from ~src~ to ~dst~ while ~peek~ returns non-zero
+   chunk sizes. */
+size_t uio_copy_while(struct ui *src, struct uo *dst,
+                      size_t peek(struct ui *));
+
 /* Find the first occurrence of ~pattern~ in ~is~. Return ~true~ if
    found.  The stream will be positioned directly after the pattern or
    at eof. */

@@ -273,17 +273,32 @@ size_t uio_copy(struct ui *src, struct uo *dst)
 
 size_t uio_copy_n(struct ui *src, struct uo *dst, size_t n)
 {
+        if (uo_flush(dst) < cb_available(&dst->cb))
+                return 0;
+
         for (size_t i = 0; i < n; ++i) {
                 char tmp;
 
-                if (!ui_peek_c(src, &tmp) || !uo_put_c(dst, tmp))
+                if (!ui_peek_c(src, &tmp) || !uo_put_c(dst, tmp)
+                    || uo_flush(dst) != 1)
                         return i;
 
                 ui_get_c(src, NULL);
         }
 
-        uo_flush(dst);
         return n;
+}
+
+size_t uio_copy_while(struct ui *src, struct uo *dst,
+                      size_t peek(struct ui *))
+{
+        size_t wtot = 0;
+        size_t w;
+
+        while ((w = uio_copy_n(src, dst, peek(src))))
+                wtot += w;
+
+        return wtot;
 }
 
 bool ui_find(struct ui *is, const void *pattern, size_t byte_sz)
