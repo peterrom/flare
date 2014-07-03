@@ -8,7 +8,6 @@
 #include <assert.h>
 
 #include "uio.h"
-#include "scratch.h"
 #include "ss.h"
 
 SS_DECLARE_STACK(ts, const struct forty_tag *, 8)
@@ -64,107 +63,96 @@ static const struct forty_tag *tl_find(const struct forty_tag *tl,
         return NULL;
 }
 
-static bool not_brace(char c)
+static void skip_to_next_word(struct ui *is)
 {
-        return c != '{' && c != '}';
+        char tmp;
+
+        while (ui_peek_c(is, &tmp) && tmp != ' ')
+                ui_get_c(is, NULL);
+
+        while (ui_peek_c(is, &tmp) && tmp == ' ')
+                ui_get_c(is, NULL);
 }
 
-static char *first_brace_or_end(char *beg, char *end)
+static size_t peek_non_brace(struct ui *is)
 {
-        while (beg != end && not_brace(*beg))
-                ++beg;
-
-        return beg;
+        char tmp;
+        return (ui_peek_c(is, &tmp) && tmp != '{' && tmp != '}') ? 1 : 0;
 }
 
-static char *handle_text(struct scratch *s,
-                         void *context, void print(void *, struct ui *))
+static void handle_text(struct ui *is,
+                        void *context, void print(void *, struct ui *))
 {
-        char *const end = first_brace_or_end(s->valid_beg, s->valid_end);
+        char tmpbuf[256];
 
-        if (print) {
-                struct ui arg;
-                ui_buf(&arg, s->valid_beg, (size_t) (end - s->valid_beg));
+        struct uo tmpbuf_os;
+        uo_buf(&tmpbuf_os, tmpbuf, sizeof(tmpbuf));
 
-                print(context, &arg);
-        }
+        const size_t tmpbuf_sz = uio_copy_while(is, &tmpbuf_os, peek_non_brace);
 
-        return end;
+        struct ui tmpbuf_is;
+        ui_buf(&tmpbuf_is, tmpbuf, tmpbuf_sz);
+
+        if (print)
+                print(context, &tmpbuf_is);
 }
 
-static char *handle_pops(struct scratch *s, void *context,
-                         struct ss_ts *ts, int *alt_ts)
-{
-        char *i = s->valid_beg;
-
-        for (; i != s->valid_end && *i == '}'; ++i)
-                pop_tag(ts, alt_ts, context);
-
-        return i;
-}
-
-static char *tag_end_or_end(char *beg, char *end)
-{
-        char *i = beg;
-        while (i != end && *i != ' ')
-                ++i;
-
-        return i;
-}
-
-static char *handle_tag(struct scratch *s, void *context,
-                        const struct forty_tag *tl,
+static void handle_pops(struct ui *is, void *context,
                         struct ss_ts *ts, int *alt_ts)
 {
-        char *const tag_beg = s->valid_beg + 1;
-        char *const tag_end = tag_end_or_end(tag_beg, s->valid_end);
+        char tmp;
 
-        if (tag_end == s->valid_end)
-                return NULL;
+        while (ui_peek_c(is, &tmp) && tmp == '}') {
+                pop_tag(ts, alt_ts, context);
+                ui_get_c(is, NULL);
+        }
+}
 
-        const struct forty_tag *tag =
-                tl_find(tl, tag_beg, (size_t) (tag_end - tag_beg));
+static size_t peek_non_space(struct ui *is)
+{
+        char tmp;
+        return (ui_peek_c(is, &tmp) && tmp != ' ') ? 1 : 0;
+}
 
+static void handle_tag(struct ui *is, void *context,
+                       const struct forty_tag *tl,
+                       struct ss_ts *ts, int *alt_ts)
+{
+        ui_get_c(is, NULL);
+
+        char tmpbuf[256];
+
+        struct uo tmpbuf_os;
+        uo_buf(&tmpbuf_os, tmpbuf, sizeof(tmpbuf));
+
+        const size_t tmpbuf_sz = uio_copy_while(is, &tmpbuf_os, peek_non_space);
+
+        const struct forty_tag *tag = tl_find(tl, tmpbuf, tmpbuf_sz);
         push_tag(ts, alt_ts, tag, context);
 
-        return tag_end + 1;
+        skip_to_next_word(is);
 }
 
-static bool parse_scratch(struct scratch *s, struct ss_ts *ts, int *alt_ts,
-                          const struct forty_tag *tl,
-                          void *context,
-                          void print(void *, struct ui *))
+static void parse_stream(struct ui *is, struct ss_ts *ts, int *alt_ts,
+                         const struct forty_tag *tl,
+                         void *context,
+                         void print(void *, struct ui *))
 {
-        while (!scratch_empty(s)) {
-                char *end;
+        char tmp;
 
-                switch (*s->valid_beg) {
+        while (ui_peek_c(is, &tmp)) {
+                switch (tmp) {
                 case '{':
-                        end = handle_tag(s, context, tl, ts, alt_ts);
+                        handle_tag(is, context, tl, ts, alt_ts);
                         break;
                 case '}':
-                        end = handle_pops(s, context, ts, alt_ts);
+                        handle_pops(is, context, ts, alt_ts);
                         break;
                 default:
-                        end = handle_text(s, context, print);
+                        handle_text(is, context, print);
                         break;
                 }
-
-                if (!end)
-                        return false;
-
-                s->valid_beg = end;
         }
-
-        return true;
-}
-
-static void reset_state(struct ui *is, struct scratch *s,
-                        struct ss_ts *ts, int *alt_ts)
-{
-        ui_find(is, " ", 1);
-        scratch_clear(s);
-        push_tag(ts, alt_ts, NULL, NULL);
 }
 
 void forty_parse(const struct forty_tag *tl,
@@ -172,19 +160,12 @@ void forty_parse(const struct forty_tag *tl,
                  void print(void *, struct ui *),
                  struct ui *is)
 {
-        struct scratch s;
-        scratch_init(&s);
-
         struct ss_ts ts;
         ss_ts_init(&ts);
 
         int alt_ts = 0;
 
-        while (scratch_fill(&s, is)) {
-                if (!parse_scratch(&s, &ts, &alt_ts, tl, context, print) &&
-                    scratch_full(&s))
-                        reset_state(is, &s, &ts, &alt_ts);
-        }
+        parse_stream(is, &ts, &alt_ts, tl, context, print);
 
         pop_remaining(&ts, context);
 }

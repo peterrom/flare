@@ -94,6 +94,8 @@ bool testforty_intrp(const char *input, const char *expected)
 
         forty_parse(testforty_tl, &state, testforty_state_print, &is);
 
+        /* printf("\nexp: \"%s\"\nres: \"%s\"\n", expected, state.buffer); */
+
         return strncmp(state.buffer, expected, strlen(expected)) == 0;
 }
 
