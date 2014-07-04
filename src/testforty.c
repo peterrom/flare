@@ -104,10 +104,24 @@ tf_TEST(plain_text)
         tf_ASSERT(testforty_intrp("", ""));
         tf_ASSERT(testforty_intrp("some text", "some text"));
 
-        const char *long_text =
-                "a string that is longer than the scratch "
-                "buffer length by a wide margin so that we"
-                " test that the buffering works.";
+        const char long_text[] =
+                "And I watched her through the rain coming through "
+                "the ceiling and thought back to Salt Lake; and my "
+                "father, Sid, who ran the Capitol Theatre. It was a"
+                " movie house, but it had been an old vaudeville "
+                "house, and he wanted to bring live performances "
+                "back to the Capitol. In 1948, he invited Marian "
+                "Anderson to come and sing there. And I remembered "
+                "we went to the train station to pick her up and "
+                "took her to the biggest hotel in town--the Hotel "
+                "Utah--but they wouldn’t let her stay there because "
+                "she was black. And I remember my father's humiliation, "
+                "and her humiliation, as I saw her singing there through "
+                "the rain. "
+                "And I realized right then; I said \"Brenden right then, "
+                "I knew that it was all wrong; that it all had to change. "
+                "And that that change had to start with me.\"";
+
 
         tf_ASSERT(testforty_intrp(long_text, long_text));
 }
