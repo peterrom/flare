@@ -88,10 +88,9 @@ static void handle_text(struct ui *is,
         struct uo tmpbuf_os;
         uo_buf(&tmpbuf_os, tmpbuf, sizeof(tmpbuf));
 
-        const size_t tmpbuf_sz = uio_copy_while(is, &tmpbuf_os, peek_non_brace);
-
         struct ui tmpbuf_is;
-        ui_buf(&tmpbuf_is, tmpbuf, tmpbuf_sz);
+        ui_buf(&tmpbuf_is, tmpbuf,
+               uio_copy_while(is, &tmpbuf_os, peek_non_brace));
 
         if (print)
                 print(context, &tmpbuf_is);
@@ -125,9 +124,10 @@ static void handle_tag(struct ui *is, void *context,
         struct uo tmpbuf_os;
         uo_buf(&tmpbuf_os, tmpbuf, sizeof(tmpbuf));
 
-        const size_t tmpbuf_sz = uio_copy_while(is, &tmpbuf_os, peek_non_space);
+        const struct forty_tag *tag =
+                tl_find(tl, tmpbuf,
+                        uio_copy_while(is, &tmpbuf_os, peek_non_space));
 
-        const struct forty_tag *tag = tl_find(tl, tmpbuf, tmpbuf_sz);
         push_tag(ts, alt_ts, tag, context);
 
         skip_to_next_word(is);
