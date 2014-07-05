@@ -15,8 +15,11 @@ CFLAGS = -Wall -Wextra -pedantic -g -Wshadow -Wwrite-strings   \
 	 -Wswitch-enum -Wswitch-default -Wformat=2 -fno-common \
 	 -Wconversion
 
+LINK = -lm
+
 PARTS += uio
 PARTS += forty
+PARTS += la
 
 H_PARTS += ss
 
@@ -37,7 +40,7 @@ check: ${TESTS}
 
 .build/test%: .build/test%.o ${OBJ}
 	@echo "  '-- Linking: $@"
-	@c99 $^ -o $@ ${CFLAGS}
+	@c99 $^ -o $@ ${LINK} ${CFLAGS}
 	@echo
 
 .build/%.o: %.c | .build
