@@ -46,13 +46,9 @@
    fact that no dynamic memory allocation is performed.
 
    Data from the (possibly infinite) input stream is processed in a
-   SCRATCH buffer, this imposes a limit on the length of the tag name.
-
-   : "text {a-really-long-tag-name text ..."
-   :       ^                      ^
-
-   The string marked with ~^~ (inclusive) above has to fit inside a
-   SCRATCH buffer (or else the tag will be ignored).
+   buffer of fixed length. Only the part of the tag name that fits
+   inside this buffer is matched against tags registered in the tag
+   list.
 
    The other limitation is due to the fact that the parser has to keep
    a stack of limited size of what tags are active (so that they can
