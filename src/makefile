@@ -17,17 +17,24 @@ CFLAGS = -Wall -Wextra -pedantic -g -Wshadow -Wwrite-strings   \
 
 LINK = -lm
 
+CFLAGS += $(shell pkg-config --cflags glfw3)
+LINK += $(shell pkg-config --static --libs glfw3)
+
 PARTS += uio
 PARTS += forty
 PARTS += la
 
 H_PARTS += ss
 
+C_PARTS += main
+
 # generated
 OBJ = $(addprefix .build/, $(addsuffix .o, ${PARTS}))
-TESTS += $(addprefix .build/test, ${PARTS})
-TESTS += $(addprefix .build/test, ${H_PARTS})
-DEPS = $(OBJ:.o=.P) $(addsuffix .P, ${TESTS})
+EXES = $(addprefix .build/, ${C_PARTS})
+TESTS += $(addprefix .build/test, ${PARTS} ${H_PARTS})
+DEPS = $(OBJ:.o=.P) $(addsuffix .P, ${TESTS} ${EXES})
+
+${EXES}:
 
 check: ${TESTS}
 	@echo
@@ -39,7 +46,12 @@ check: ${TESTS}
 	@c99 -MM -MP $< >> $@
 
 .build/test%: .build/test%.o ${OBJ}
-	@echo "  '-- Linking: $@"
+	@echo "  '-- Linking test: $@"
+	@c99 $^ -o $@ ${LINK} ${CFLAGS}
+	@echo
+
+.build/%: .build/%.o ${OBJ}
+	@echo "  '-- Linking executable: $@"
 	@c99 $^ -o $@ ${LINK} ${CFLAGS}
 	@echo
 
