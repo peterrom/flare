@@ -2,20 +2,24 @@
    This file is part of Flare which is licensed under GNU GPL v3.
    See the file named LICENSE for details. */
 
+#include "tf.h"
 #include "chum.h"
-#include "glenn.h"
 
-int main(void)
+tf_TEST(init)
 {
         struct chum_context ctx;
-        chum_init(&ctx);
+        tf_ASSERT(chum_init(&ctx));
 
-        struct glenn_state s;
-        glenn_init(&s, 640, 480);
+        tf_IN_CASE_OF_ASSERT(
+                chum_terminate(&ctx);
+                );
 
-        while (chum_refresh(&ctx))
-                glenn_display(&s);
+        tf_ASSERT(chum_refresh(&ctx));
 
         chum_terminate(&ctx);
-        return 0;
+}
+
+tf_SUITE(chum)
+{
+        tf_RUN(init);
 }

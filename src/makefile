@@ -23,6 +23,8 @@ LINK += $(shell pkg-config --static --libs glfw3)
 PARTS += uio
 PARTS += forty
 PARTS += la
+PARTS += chum
+PARTS += glenn
 
 H_PARTS += ss
 
