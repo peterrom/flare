@@ -61,3 +61,8 @@ bool chum_refresh(struct chum_context *ctx)
 
         return !glfwWindowShouldClose(ctx->internal);
 }
+
+void chum_window_size(struct chum_context *ctx, int *width, int *height)
+{
+        glfwGetFramebufferSize(ctx->internal, width, height);
+}

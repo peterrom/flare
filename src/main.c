@@ -13,8 +13,14 @@ int main(void)
         struct glenn_state s;
         glenn_init(&s, 640, 480);
 
-        while (chum_refresh(&ctx))
+        while (chum_refresh(&ctx)) {
+                int width;
+                int height;
+
+                chum_window_size(&ctx, &width, &height);
+                glenn_resize(&s, width, height);
                 glenn_display(&s);
+        }
 
         chum_terminate(&ctx);
         return 0;
