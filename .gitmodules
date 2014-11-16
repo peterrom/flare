@@ -1,0 +1,3 @@
+[submodule "lib/greg"]
+	path = lib/greg
+	url = https://github.com/elmindreda/greg.git

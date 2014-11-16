@@ -38,12 +38,13 @@ DEPS = $(OBJ:.o=.P) $(addsuffix .P, ${TESTS} ${EXES})
 
 ${EXES}:
 
+.PHONY: check
 check: ${TESTS}
 	@echo
 	@echo "  Running test suites"
 	@for t in $^; do echo; echo $${t}:; ./$${t}; done
 
-.build/%.P: %.c | .build
+.build/%.P: src/%.c src/greg.h | .build
 	@echo -n .build/ > $@
 	@c99 -MM -MP $< >> $@
 
@@ -57,9 +58,17 @@ check: ${TESTS}
 	@c99 $^ -o $@ ${LINK} ${CFLAGS}
 	@echo
 
-.build/%.o: %.c | .build
-	@echo Building: $@
+.build/%.o: src/%.c | .build
+	@echo "Building: $@"
 	@c99 -c $< -o $@ ${CFLAGS}
+
+src/greg.h: .build/greg/src/greg
+	@cd lib/greg && ../../$< --api=gl --core --version=3.3
+	@mv lib/greg/output/greg.h $@
+
+.build/greg/src/greg: lib/greg
+	@mkdir -p .build/greg
+	cd .build/greg && cmake ../../lib/greg && make
 
 .build:
 	@mkdir $@
@@ -68,4 +77,4 @@ check: ${TESTS}
 
 .PHONY: clean
 clean:
-	@-rm -rf .build
+	@-rm -rf .build src/greg.h
