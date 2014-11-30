@@ -4,6 +4,8 @@
 
 #include <assert.h>
 #include <stdarg.h>
+#include <stdio.h>
+#include <stdbool.h>
 
 #define GREG_USE_GLFW3
 #include "greg.h"
@@ -21,8 +23,14 @@ static GLuint create_shader(GLenum shader_type, const char *data)
 
         GLint status;
         glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
-        assert(status != GL_FALSE);
 
+	if (status == GL_FALSE) {
+		GLchar info_log[256];
+		glGetShaderInfoLog(shader, sizeof(info_log), NULL, info_log);
+
+		fprintf(stderr, "Shader compilation failed:\n%s\n", info_log);
+		assert(false);
+	}
         return shader;
 }
 
