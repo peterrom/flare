@@ -5,7 +5,8 @@
 #include <assert.h>
 #include <stdarg.h>
 
-#define GL_GLEXT_PROTOTYPES
+#define GREG_USE_GLFW3
+#include "greg.h"
 #include <GLFW/glfw3.h>
 
 #include "glenn.h"
@@ -64,14 +65,14 @@ void glenn_init(struct glenn_state* s, int width, int height)
         GLuint fragment_shader = create_shader(GL_FRAGMENT_SHADER,
                                                "#version 330\n"
                                                ""
-                                               "out vec4 output;"
+                                               "out vec4 res;"
                                                ""
                                                "void main()"
                                                "{"
-                                               "        output = vec4(0.2f,"
-                                               "                      0.8f,"
-                                               "                      0.2f,"
-                                               "                      1.0f);"
+                                               "        res = vec4(0.2f,"
+                                               "                   0.8f,"
+                                               "                   0.2f,"
+                                               "                   1.0f);"
                                                "}");
 
         s->program = create_program(2, vertex_shader, fragment_shader);

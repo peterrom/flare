@@ -4,7 +4,9 @@
 
 #include <stdio.h>
 
-#define GL_GLEXT_PROTOTYPES
+#define GREG_IMPLEMENTATION
+#define GREG_USE_GLFW3
+#include "greg.h"
 #include <GLFW/glfw3.h>
 
 #include "chum.h"
@@ -44,6 +46,9 @@ bool chum_init(struct chum_context *ctx)
 
         glfwMakeContextCurrent(ctx->internal);
         glfwSetKeyCallback(ctx->internal, key_callback);
+
+	if (!gregInit())
+		return false;
 
         return true;
 }
