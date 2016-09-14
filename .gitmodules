@@ -1,3 +1,6 @@
 [submodule "lib/greg"]
 	path = lib/greg
 	url = https://github.com/elmindreda/greg.git
+[submodule "lib/glfw"]
+	path = lib/glfw
+	url = https://github.com/glfw/glfw.git
