@@ -49,7 +49,6 @@ static void pop_remaining(struct ss_ts *ts, void *context)
 
                 if (tag && tag->pop)
                         tag->pop(context);
-
         }
 }
 

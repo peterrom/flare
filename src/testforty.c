@@ -122,7 +122,6 @@ tf_TEST(plain_text)
                 "I knew that it was all wrong; that it all had to change. "
                 "And that that change had to start with me.\"";
 
-
         tf_ASSERT(testforty_intrp(long_text, long_text));
 }
 
