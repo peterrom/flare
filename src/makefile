@@ -64,6 +64,9 @@ FLARE_TEST := \
 	testss \
 	testuio
 
+.PHONY: all
+all: greg.h flare
+
 greg: ../lib/greg
 	$(CXX) -std=c++11 -I$</deps $(GREG_SRC) -o $@
 
