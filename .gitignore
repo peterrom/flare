@@ -1,2 +1,12 @@
 .build
 src/greg.h
+/src/flare
+/src/*.o
+/src/testchum
+/src/testforty
+/src/testglenn
+/src/testla
+/src/testss
+/src/testuio
+/src/KHR
+/src/greg
