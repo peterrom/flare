@@ -84,6 +84,10 @@ flare: main.c $(FLARE_SRC) $(GLFW_OBJ)
 test%: test%.c $(FLARE_SRC) $(GLFW_OBJ)
 	$(CC) $(CFLAGS) $(CPPFLAGS) $^ $(LDFLAGS) -o $@
 
+.PHONY: run
+run: flare
+	./flare
+
 .PHONY: check
 check: $(FLARE_TEST)
 	for t in $^; do echo; echo $${t}:; ./$${t}; done
