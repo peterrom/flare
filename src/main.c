@@ -11,7 +11,8 @@ int main(void)
         chum_init(&ctx);
 
         struct glenn_state s;
-        glenn_init(&s, 640, 480);
+        glenn_init(&s);
+        glenn_resize(&s, 640, 480);
 
         while (chum_refresh(&ctx)) {
                 int width;

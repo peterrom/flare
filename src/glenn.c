@@ -58,7 +58,7 @@ static GLuint create_program(int count, ...)
         return program;
 }
 
-void glenn_init(struct glenn_state* s, int width, int height)
+void glenn_init(struct glenn_state* s)
 {
         GLuint vertex_shader = create_shader(GL_VERTEX_SHADER,
                                              "#version 330\n"
@@ -106,8 +106,6 @@ void glenn_init(struct glenn_state* s, int width, int height)
         GLuint vao;
         glGenVertexArrays(1, &vao);
         glBindVertexArray(vao);
-
-        glenn_resize(s, width, height);
 }
 
 void glenn_resize(att_UNUSED struct glenn_state* s, int width, int height)

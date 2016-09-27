@@ -10,7 +10,7 @@
 
 struct glenn_state;
 
-void glenn_init(struct glenn_state* s, int width, int height);
+void glenn_init(struct glenn_state* s);
 void glenn_resize(struct glenn_state* s, int width, int height);
 void glenn_display(struct glenn_state* s);
 
