@@ -10,7 +10,8 @@
 
 struct glenn_state;
 
-void glenn_init(struct glenn_state* s);
+void glenn_init(struct glenn_state* s, const unsigned int n);
+void glenn_update(struct glenn_state *s, const float *v);
 void glenn_resize(struct glenn_state* s, int width, int height);
 void glenn_display(struct glenn_state* s);
 
@@ -18,6 +19,7 @@ void glenn_display(struct glenn_state* s);
 struct glenn_state {
         unsigned int program;
         unsigned int pbo;
+        unsigned int n;
 };
 
 #endif /* GLENN_INCL */

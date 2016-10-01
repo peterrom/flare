@@ -20,7 +20,7 @@ tf_TEST(init)
         chum_window_size(&ctx, &width, &height);
 
         struct glenn_state s;
-        glenn_init(&s);
+        glenn_init(&s, 0);
         glenn_resize(&s, width, height);
 
         glenn_display(&s);

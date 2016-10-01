@@ -10,8 +10,15 @@ int main(void)
         struct chum_context ctx;
         chum_init(&ctx);
 
+        const float vs[] = {
+                 0.0f,    0.5f,   0.0f, 1.0f,
+                 0.5f,   -0.366f, 0.0f, 1.0f,
+                -0.5f,   -0.366f, 0.0f, 1.0f
+        };
+
         struct glenn_state s;
-        glenn_init(&s);
+        glenn_init(&s, 3);
+        glenn_update(&s, vs);
         glenn_resize(&s, 640, 480);
 
         while (chum_refresh(&ctx)) {

@@ -58,7 +58,7 @@ static GLuint create_program(int count, ...)
         return program;
 }
 
-void glenn_init(struct glenn_state* s)
+void glenn_init(struct glenn_state* s, const unsigned int n)
 {
         GLuint vertex_shader = create_shader(GL_VERTEX_SHADER,
                                              "#version 330\n"
@@ -90,22 +90,25 @@ void glenn_init(struct glenn_state* s)
 
         glGenBuffers(1, &s->pbo);
 
-        glBindBuffer(GL_ARRAY_BUFFER, s->pbo);
-
-        const float vertex_pos[] = {
-                0.0f,    0.5f, 0.0f, 1.0f,
-                0.5f, -0.366f, 0.0f, 1.0f,
-                -0.5f, -0.366f, 0.0f, 1.0f
-        };
-
-        glBufferData(GL_ARRAY_BUFFER,
-                     sizeof(vertex_pos), vertex_pos, GL_STATIC_DRAW);
-
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        s->n = n;
 
         GLuint vao;
         glGenVertexArrays(1, &vao);
         glBindVertexArray(vao);
+}
+
+void glenn_update(struct glenn_state *s, const float *v)
+{
+        const size_t sz = s->n * sizeof(float) * 4;
+
+        glBindBuffer(GL_ARRAY_BUFFER, s->pbo);
+
+        /* Buffer re-specification or 'orphaning' */
+        glBufferData(GL_ARRAY_BUFFER, sz, NULL, GL_STREAM_DRAW);
+        /* Upload new data */
+        glBufferData(GL_ARRAY_BUFFER, sz, v, GL_STREAM_DRAW);
+
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void glenn_resize(att_UNUSED struct glenn_state* s, int width, int height)
@@ -124,7 +127,7 @@ void glenn_display(struct glenn_state* s)
         glEnableVertexAttribArray(0);
         glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, 0);
 
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawArrays(GL_TRIANGLES, 0, s->n);
 
         glDisableVertexAttribArray(0);
         glUseProgram(0);
