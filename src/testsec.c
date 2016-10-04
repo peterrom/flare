@@ -13,7 +13,7 @@ tf_TEST(new)
         for (int i = 0; i < SEC_MAX_ENT; ++i) {
                 int index = sec_new(&w);
                 tf_ASSERT(index == i);
-                w.component[index] = sec_triangle;
+                w.component[index] = sec_c_triangle;
         }
 
         tf_ASSERT(sec_new(&w) == -1);
@@ -26,7 +26,7 @@ tf_TEST(del)
 
         int i;
         while ((i = sec_new(&w)) != -1)
-                w.component[i] = sec_triangle;
+                w.component[i] = sec_c_triangle;
 
         sec_del(&w, 5);
         tf_ASSERT(sec_new(&w) == 5);

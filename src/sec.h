@@ -13,17 +13,18 @@
 #define SEC_MAX_ENT 16
 
 enum sec_component {
-        sec_triangle = 1
+        sec_c_triangle = 1
+};
+
+struct sec_triangle {
+        struct {
+                float x, y, z, w;
+        } vx[3];
 };
 
 struct sec_world {
         enum sec_component component[SEC_MAX_ENT];
-
-        struct {
-                struct {
-                        float x, y, z, w;
-                } vx[3];
-        } triangle[SEC_MAX_ENT];
+        struct sec_triangle triangle[SEC_MAX_ENT];
 };
 
 void sec_world_init(struct sec_world *w);
