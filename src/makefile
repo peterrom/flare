@@ -54,6 +54,7 @@ FLARE_SRC := \
 	forty.c \
 	glenn.c \
 	la.c \
+	sec.c \
 	uio.c
 
 FLARE_TEST := \
@@ -61,6 +62,7 @@ FLARE_TEST := \
 	testforty \
 	testglenn \
 	testla \
+	testsec \
 	testss \
 	testuio
 
