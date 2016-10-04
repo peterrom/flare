@@ -26,6 +26,8 @@ struct sec_world {
         } triangle[SEC_MAX_ENT];
 };
 
+void sec_world_init(struct sec_world *w);
+
 /* New entity index or -1 if no free slot */
 int sec_new(struct sec_world *w);
 

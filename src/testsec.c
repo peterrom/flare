@@ -7,7 +7,8 @@
 
 tf_TEST(new)
 {
-        struct sec_world w = { 0 };
+        struct sec_world w;
+        sec_world_init(&w);
 
         for (int i = 0; i < SEC_MAX_ENT; ++i) {
                 int index = sec_new(&w);
@@ -20,7 +21,8 @@ tf_TEST(new)
 
 tf_TEST(del)
 {
-        struct sec_world w = { 0 };
+        struct sec_world w;
+        sec_world_init(&w);
 
         int i;
         while ((i = sec_new(&w)) != -1)

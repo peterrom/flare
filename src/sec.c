@@ -4,6 +4,11 @@
 
 #include "sec.h"
 
+void sec_world_init(struct sec_world *w)
+{
+        *w = (struct sec_world) { 0 };
+}
+
 int sec_new(struct sec_world *w)
 {
         for (int i = 0; i < SEC_MAX_ENT; ++i)
