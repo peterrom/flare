@@ -23,7 +23,6 @@ int main(void)
 
         struct glenn_state s;
         glenn_init(&s, 3);
-        glenn_update(&s, (const float *) w.triangle[i].vx);
         glenn_resize(&s, 640, 480);
 
         while (chum_refresh(&ctx)) {
@@ -32,6 +31,7 @@ int main(void)
 
                 chum_window_size(&ctx, &width, &height);
                 glenn_resize(&s, width, height);
+                glenn_update(&s, (const float *) w.triangle[i].vx);
                 glenn_display(&s);
         }
 
