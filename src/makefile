@@ -54,6 +54,7 @@ FLARE_SRC := \
 	forty.c \
 	glenn.c \
 	la.c \
+	lime.c \
 	sec.c \
 	uio.c
 
